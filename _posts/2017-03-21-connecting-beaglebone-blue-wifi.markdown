@@ -1,11 +1,11 @@
 ---
 layout: post
-title:  "BeagleBone Blue WiFi"
+title:  "Connecting the BeagleBone Blue to WiFi"
 date:   2017-03-21 20:10:22 -0400
 categories: embedded
 ---
 
-A [BeagleBone _Blue_][bbblue] arrived in my mail today. My first task: get it on a wireless network.
+A [BeagleBone _Blue_][bbblue] arrived in my mail today. My first task: connect it to a wireless network.
 
 Unlike other models in the BeagleBoard family, including the popular BeagleBone Black, the _Blue_ has no ethernet port. The Blue is all wireless with WiFi and Bluetooth 4.1 and LE. Also unlike the Black, the Blue does not have a graphical interface. Therefore, we rely on command line tools to configure wireless networking.
 
