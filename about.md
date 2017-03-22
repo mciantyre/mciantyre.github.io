@@ -4,12 +4,8 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+I'm Ian.
 
-You can find the source code for the Jekyll new theme at:
-{% include icon-github.html username="jekyll" %} /
-[minima](https://github.com/jekyll/minima)
+I studied biological signal processing and control systems at the University of Pittsburgh. Nowadays, I'm found in and around Pittsburgh working on software for medical devices; biking where bikers probably shouldn't bike; and generally geeking out.
 
-You can find the source code for Jekyll at
-{% include icon-github.html username="jekyll" %} /
-[jekyll](https://github.com/jekyll/jekyll)
+This blog is not only a place for me to share information and ramble, but also an outlet for me to enhance my writing. I love feedback, so please open issues, start pull requests, or reach out if something is unclear.
