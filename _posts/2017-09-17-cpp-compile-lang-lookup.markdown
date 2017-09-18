@@ -12,7 +12,7 @@ language by navigating through a few graphical menus. She'll see all the strings
 update immediately on the user interface.
 
 As might be expected when dealing with legacy code, my teammates and I ran into
-an issue when adding language strings to the codebase. The original designers
+issues when adding language strings to the codebase. The original designers
 took the approach of
 
 - defining all the strings for each language in a C array
@@ -91,21 +91,20 @@ will use the new language array.
 The design requires that strings in each language array are in alignment with
 the keys in the `LanguageString` enum. If a new string is added in the middle of
 the ENGLISH_STRINGS array, but its key is added near the end of the enum, all of
-the strings on the UI will be in incorrect positions. We experienced the issue
+the strings in the system will be in incorrect positions. We experienced the issue
 first-hand when we added new strings and a string key without concern of the
-order. It took us more time than it should have to figure out the problem.
+order. It took about a day to figure out the problem.
 
 As it turns out, the outputs from an invocation of `get_string` are known at
 compile time. There isn't a need for `get_string` to be a runtime function; it
-could be a compile-time function. More than that, we could use C++
-metaprogramming techniques to guarantee correctness of language string
+could be a compile-time function. Moreover, we could use C++
+metaprogramming techniques to guarantee correct language string
 selection. While I cannot propose such a drastic change to an existing C
 project, I was still interested in exploring a solution.
 
 ## Compile-time string selection
 
-We'll use the full power of C++11 to create a new implementation. We keep
-the idea of having a collection of strings from the same language. However,
+We keep the idea of having a collection of strings from the same language. However,
 instead of keeping the indexing enum and string separate, we pair the two
 together in a `LangPair` compile-time struct.
 
@@ -123,28 +122,25 @@ The goal, at compile time, is to create a list of `LangPair`s that map a
 resembling
 
 ```c++
-using EnglishStrings
-= type_list
+using EnglishStrings = type_list
 <
-    LangPair<LanguageKey::LANG_HELLO    , STR_ENG_HELLO>,
+    LangPair<LanguageKey::LANG_HELLO    , STR_ENG_HELLO>,   // Hello before goodbye
     LangPair<LanguageKey::LANG_GOODBYE  , STR_ENG_GOODBYE>
 >;
 
-using SpanishStrings
-= type_list
+using SpanishStrings = type_list
 <
-    LangPair<LanguageKey::LANG_GOODBYE  , STR_ESP_GOODBYE>,
+    LangPair<LanguageKey::LANG_GOODBYE  , STR_ESP_GOODBYE>, // Goodbye before hello
     LangPair<LanguageKey::LANG_HELLO    , STR_ESP_HELLO>
 >;
 ```
 
-We use a `type_list` to create a collection of `LangPair`s. Notice that I
+We use a `type_list` to create a collection of `LangPair`s. Notice that we
 swapped the order of the strings between the two lists. We'll show
 that the design is resiliant to a re-order, and any issues with missing strings
-are caught at compile-time. (Of course, I can't help you if you pair a "hello"
-key with a "goodbye" string!)
+are caught at compile-time. (Of course, we cannot catch incorrect pairings!)
 
-The `type_list` is defined as
+The `type_list` resembles a "cons list" in functional languages. It is defined as
 
 ```c++
 template <typename...>
@@ -165,11 +161,13 @@ struct type_list<Head>                              // (3)
 
 `type_list` accepts a variadic number of types (1). One specialization defines a
 `type_list` with a head and a variadic tail; that is, one or more tail elements
-(2). We use inheritance to say that a `type_list` that matches (2) also has a
-head. When there is only one element in the list, the (3) specialization
-matches, and it defines the "head" of the list at this point.
+(2). When there is only one element in the list, the (3) specialization
+matches, and it defines the "head" element of the list. A `type_list`
+instantiated by (2) inherits from a `type_list` of a single element defined in
+(3), so a list of more than one element has both a "head" and a "tail."
 
-Here's a demonstration of accessing the third element of some type list:
+We can brute-force `type_list` traversal as you would access the
+values of a functionally linked-list:
 
 ```c++
 using some_list = type_list<int, bool, float, double, long>;
@@ -177,11 +175,11 @@ using third = typename some_list::tail::tail::head;
 static_assert(std::is_same<third, float>::value, "It's not a float!?");
 ```
 
-We can traverse the list by peeling away the list with `tail`, then grab the
+We traverse the list by peeling away the list with `tail` then grabbing the
 head element with `head`.
 
-We need a way to lookup a key in the `type_list` and get the related value. A
-compile-time function `lookup` will have the signature
+We need a way to lookup a key in the `type_list` and get the related key-value
+pairing. A compile-time function `lookup` will have the signature
 
 ```c++
 template
@@ -196,9 +194,7 @@ struct lookup;
 Where the `class TList` will be a `type_list`. There is no definition yet;
 we'll define specializations below.
 
-We declared a `bool Found` to indicate that the key of the head element matches
-the key we want. If `Found` is false, we want to keep looking down the tail of
-the list:
+We declared a `bool Found` to indicate that the key of the head element matches the key we want. A user should never specify `Found` directly; the default value is the equality of the list's head element to the key. If `Found` is false, we want to keep looking down the tail of the list:
 
 ```c++
 template
@@ -206,10 +202,10 @@ template
     LanguageKey Key,
     class TList
 >
-struct lookup<Key, TList, false>
+struct lookup<Key, TList, false>    // Specialization: Found is false
 {
-    using type =
-        typename lookup<
+    using type =                    // type is the type returned by a
+        typename lookup<            // subsequent lookup down the tail
             Key,
             typename TList::tail,
             TList::tail::head::key == Key
@@ -225,14 +221,13 @@ template
     LanguageKey Key,
     class TList
 >
-struct lookup<Key, TList, true>
+struct lookup<Key, TList, true>     // Specialization: Found is true
 {
     using type = typename TList::head;
 };
 ```
 
-Finally, we can create a `get_string` function to return language
-strings at runtime:
+Finally, we can create a `get_string` function to return language strings at runtime:
 
 ```c++
 template <LanguageKey Key>
@@ -260,12 +255,12 @@ int main(int argc, const char * argv[]) {
 ```
 
 `get_string` accepts a `LanguageKey` constant as a type argument, and
-a `Language` run-time argument. The run-time argument is the current
+a `Language` enumeration run-time argument. The run-time argument is the current
 system language.
 
 Since string lookup is performed at compile-time, there are instances of
 `get_string` for each `LanguageKey` argument provided to the function.
-It would be as if we wrote out the following functions manually:
+It's as if we wrote out each function manually:
 
 ```c++
 // When the template argument is LanguageKey::LANG_HELLO...
@@ -314,18 +309,17 @@ int main(int argc, const char * argv[]) {
 
 Because `SpanishStrings` doesn't have a pairing to `LANG_LOVE`, a developer who
 tries `get_string<LanguageKey::LANG_LOVE>(...)` will see a build
-error. The specific error will most likely resemble a failed attempt to get a
+error. The specific error resembles a failed attempt to get a
 `tail` type from a `type_list`, since the `lookup` function has exhausted the
-type list. Error handling is a big TODO and a future research project for me.
-But, as far as "experiential prototypes" go, this was good enough for me (and
-better than what's there now).
+type list. Error handling is a big TODO and a future research project.
+But, as far as "experiential prototypes" go, this was good enough (and
+better than what we had been working with).
 
 ## What's left?
 
 We took a brittle string indexing system and added compile-time safety with
-some added flexibility and maintainability. Improvements could include
-better compile-time error handling; there should be some way to say something
-to the effect of _"Error: key not found in all language lists"_.
+more flexibility and maintainability. Improvements could include
+better compile-time error handling; an error to the effect of _"Error: key not found in all language lists"_ would be better than the current compiler error.
 
 The original implementation had _L_ arrays of _N_ string pointers, where _L_ is
 the number of languages and _N_ is the number of strings in a language. The
