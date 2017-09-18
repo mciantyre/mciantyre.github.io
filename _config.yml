@@ -33,4 +33,4 @@ exclude:
 
 paginate:         5
 permalink:        pretty
-highlighter:      pygments
+highlighter:      rouge
