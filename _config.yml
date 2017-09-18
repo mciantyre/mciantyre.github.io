@@ -18,7 +18,7 @@ email: me@ianpmcintyre.com
 description: > # this means to ignore newlines until "baseurl:"
   Diametric interests in embedded systems and functional programming. I'll ramble
   about things here.
-baseurl: "/" # the subpath of your site, e.g. /blog
+baseurl: / # the subpath of your site, e.g. /blog
 url: "https://mciantyre.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: mciantyre
 github_username:  mciantyre
@@ -27,10 +27,11 @@ github_username:  mciantyre
 markdown: kramdown
 gems:
   - jekyll-feed
+  - jekyll-github-metadata
 exclude:
   - Gemfile
   - Gemfile.lock
 
-paginate:         5
+paginate:         1
 permalink:        pretty
 highlighter:      rouge
