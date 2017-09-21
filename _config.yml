@@ -16,12 +16,12 @@
 title: mciantyre
 email: me@ianpmcintyre.com
 description: > # this means to ignore newlines until "baseurl:"
-  Diametric interests in embedded systems and functional programming. I'll ramble
-  about things here.
+  I'll ramble about things here.
 baseurl: / # the subpath of your site, e.g. /blog
 url: "https://mciantyre.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: mciantyre
 github_username:  mciantyre
+tagline: Ramblings
 
 # Build settings
 markdown: kramdown
