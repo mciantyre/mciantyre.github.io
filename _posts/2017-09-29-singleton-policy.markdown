@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "On the singleton pattern in C++: Policy-based design"
-date: 2017-09-25 19:13:00 -0400
+date: 2017-09-29 9:00:00 -0400
 categories: C++
 ---
 
