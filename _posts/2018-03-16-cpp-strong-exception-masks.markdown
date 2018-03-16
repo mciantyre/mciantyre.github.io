@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Safer configuration and exception masks in C++"
+date:   2018-03-19 9:00:00 -0400
 categories: [C++, embedded]
 ---
 
@@ -284,3 +285,7 @@ if (0 == denom)
 - [_Why is enum class prefered over plain enum?_](https://stackoverflow.com/questions/18335861/why-is-enum-class-preferred-over-plain-enum)
 - [_What are the basic rules and idioms for operator overloading?_](https://stackoverflow.com/questions/4421706/what-are-the-basic-rules-and-idioms-for-operator-overloading/4421719#4421719)
 - [_C++ Operator Overloading Guidelines_](http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html)
+
+# Full code
+
+<script src="https://gist.github.com/mciantyre/cdf0b8e1e74a5ad2cf8d8914938e0ea0.js"></script>
