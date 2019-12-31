@@ -17,8 +17,6 @@
 	<nav>
 		<ul>
 			
-			<li><a href="/">Home</a></li>
-			
 			<li><a href="/tags">Tags</a></li>
 			
 		</ul>
@@ -40,17 +38,17 @@
 <p>We need a tool for continuous integration (CI) and continuous delivery (CD). When we push a feature to the repository, A CI tool builds the code and runs all of our automated tests. We can configure the CI process to build and test every pull request, or if we want better insight, every batch of commits. If the build or tests fail, we get a Slack or email notification. A CI tool gives us insight into the health of our build, and it immediately alerts the team if there are issues.</p>
 <p>We also need a tool for continuous delivery. After building and testing our software, our CD process deploys the application for our end-users. Since our foosball scoreboard runs on an end-user's local machine, we simply <a href="https://github.com/IQ-Inc/foosball-scoreboard-demo/releases">make the binary available for download</a>. However, we could imagine a future foosball service that runs in the cloud. A CD process could deploy that foosball service directly to a cloud platform, making it immediately accessible in a production environment. Most importantly, a CD process removes the tedium of preparing a release build for our users. The automatic process is free from human error once it's established.</p>
 <p>Our foosball team uses <a href="https://travis-ci.org/IQ-Inc/foosball-scoreboard-demo">Travis</a>, a CI / CD service that can build, test, and deploy our application. Travis is one of a few services that treats the CI / CD definition as a software artifact. <a href="https://github.com/mciantyre/foosball-scoreboard-demo/blob/master/.travis.yml">Our configuration</a> is checked directly into the repository. As of this writing, it looks something like this:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">language: clojure
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">language: clojure
 script: lein do uberjar, test :all
 deploy:
   provider: releases
   api_key:
-    secure: bENcn3kvRKSlhXMzXf/efKbhONSy7JnhxEYW63/SZrjM45OFJ+yWSqC4dLhUqLacjKknGyatnp7Pkf6dwK88TzIxCpeFPk4d7OxYio2L52F5pm0yIR5Dz2ac/nm9SENRkX3uqkRol9iDfSJJ<span style="color:#2aa198">+8</span>+IpaMygMm2NO9t9JHa1AppGcl+yQaCKs8sW9DQs/hVfXOGnsnoq6dQ+6GV0wLnftYTsonH/G92iq6W8fE71JWZr3oduo4tcbFDLBHRVPpO1cXPlo2FOJKuSsmgBJZy4HsVyR7ak1O28JRtfAhFD8bow4ucm+4eYuEYWhc3QlrhcWj0XbDkyl79m9ALhYSzauDfyUVkxHweKtImxeuGSzRRWxoZEvzHN97usXWF4Yt30Y6xPt6U3D/E8SKL+dOQlRSq3CD3mEEHddm8ZAVYO40YkSYOxoSWTzjUgMobUMw9hUScl+srF7keiN9YjNx5KjTNrh7MU/PlFH9ab2zcuH6lNWHAuB54yUnCReNA3YNRkair0DP7dMZxh6RBtwZMs4+TnHL9FY2v1Gw84XpOJka4jbOz6J1pZ4myDSyssPbNue7XMAYYDllPDUTAFsJ6hy8aVOeCQd+mvastznHOxaJgLeg1oUzLAdyAflQSAi1gY/wlyrwoEycXxBZqCszN4Bqrej9QXjhFrcsZJq8olnO9YhI=
+    secure: bENcn3kvRKSlhXMzXf/efKbhONSy7JnhxEYW63/SZrjM45OFJ+yWSqC4dLhUqLacjKknGyatnp7Pkf6dwK88TzIxCpeFPk4d7OxYio2L52F5pm0yIR5Dz2ac/nm9SENRkX3uqkRol9iDfSJJ<span style="color:#ae81ff">+8</span>+IpaMygMm2NO9t9JHa1AppGcl+yQaCKs8sW9DQs/hVfXOGnsnoq6dQ+6GV0wLnftYTsonH/G92iq6W8fE71JWZr3oduo4tcbFDLBHRVPpO1cXPlo2FOJKuSsmgBJZy4HsVyR7ak1O28JRtfAhFD8bow4ucm+4eYuEYWhc3QlrhcWj0XbDkyl79m9ALhYSzauDfyUVkxHweKtImxeuGSzRRWxoZEvzHN97usXWF4Yt30Y6xPt6U3D/E8SKL+dOQlRSq3CD3mEEHddm8ZAVYO40YkSYOxoSWTzjUgMobUMw9hUScl+srF7keiN9YjNx5KjTNrh7MU/PlFH9ab2zcuH6lNWHAuB54yUnCReNA3YNRkair0DP7dMZxh6RBtwZMs4+TnHL9FY2v1Gw84XpOJka4jbOz6J1pZ4myDSyssPbNue7XMAYYDllPDUTAFsJ6hy8aVOeCQd+mvastznHOxaJgLeg1oUzLAdyAflQSAi1gY/wlyrwoEycXxBZqCszN4Bqrej9QXjhFrcsZJq8olnO9YhI=
   file: target/foosball-score.jar
-  skip_cleanup: <span style="color:#cb4b16">true</span>
+  skip_cleanup: <span style="color:#66d9ef">true</span>
   on:
     repo: mciantyre/foosball-scoreboard-demo
-    tags: <span style="color:#cb4b16">true</span>
+    tags: <span style="color:#66d9ef">true</span>
 </code></pre></div><p>We define the build as a Clojure project with the <code>language</code> key. For each batch of commits pushed to remote branches, run the scrip <code>lein do uberjar, test :all</code> to download dependencies, build the application, and run all the tests. We also specify a deploy to our GitHub repository's releases page. Whenever we tag a commit, upload the JAR file at <code>target/foosball-score.jar</code> so that our end-users can download the new release from GitHub. Travis uses the secure API key to interact with our repository.</p>
 <p>Rather than maintaining a document that describes how to configure the CI / CD process, we can refer directly to the configuration file. Since it's checked into git, it follows the development of the software, and it has the same traceability of the source code.</p>
 <p>There are many CI / CD services that are available for free and for sale. <a href="https://jenkins.io">Jenkins</a> is another popular, well-supported, and free option for build, test, and deployment automation. The Jenkins ecosystem has plugins for almost every job you want to achieve. Unlike Travis, Jenkins jobs are normally defined in a graphical interface. Jenkins is also designed for running on your own infrastructure, whereas Travis is normally utilized as a hosted CI / CD solution.</p>

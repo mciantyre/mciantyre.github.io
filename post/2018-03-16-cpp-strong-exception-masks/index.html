@@ -17,8 +17,6 @@
 	<nav>
 		<ul>
 			
-			<li><a href="/">Home</a></li>
-			
 			<li><a href="/tags">Tags</a></li>
 			
 		</ul>
@@ -33,46 +31,46 @@
 			<time>16.03.2018 09:00</time>
 			<div>
 				<p>In embedded C software, it's typical to see configurations and exceptions represented as bitmasks. The approach allows us to configure ON/OFF setting in a space-efficient manner. We work with the masks using bitwise AND and OR, checking and setting bits as required.</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#719e07">#</span><span style="color:#719e07">define	SPI_MODE_CKPOL_HIGH     (1 &lt;&lt;  8)</span><span style="color:#719e07">
-</span><span style="color:#719e07"></span><span style="color:#719e07">#</span><span style="color:#719e07">define	SPI_MODE_CKPHASE_HALF   (1 &lt;&lt;  9)</span><span style="color:#719e07">
-</span><span style="color:#719e07"></span><span style="color:#719e07">#</span><span style="color:#719e07">define	SPI_MODE_BODER_MSB      (1 &lt;&lt; 10)</span><span style="color:#719e07">
-</span><span style="color:#719e07"></span><span style="color:#719e07">#</span><span style="color:#719e07">define	SPI_MODE_CSPOL_HIGH     (1 &lt;&lt; 11)</span><span style="color:#719e07">
-</span><span style="color:#719e07"></span><span style="color:#719e07">#</span><span style="color:#719e07">define	SPI_MODE_CSSTAT_HIGH    (1 &lt;&lt; 12)</span><span style="color:#719e07">
-</span><span style="color:#719e07"></span><span style="color:#719e07">#</span><span style="color:#719e07">define	SPI_MODE_CSHOLD_HIGH    (1 &lt;&lt; 13)</span><span style="color:#719e07">
-</span><span style="color:#719e07"></span>
-<span style="color:#719e07">typedef</span> spi_cfg <span style="color:#dc322f">unsigned</span> <span style="color:#dc322f">int</span>;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#</span><span style="color:#75715e">define	SPI_MODE_CKPOL_HIGH     (1 &lt;&lt;  8)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">define	SPI_MODE_CKPHASE_HALF   (1 &lt;&lt;  9)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">define	SPI_MODE_BODER_MSB      (1 &lt;&lt; 10)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">define	SPI_MODE_CSPOL_HIGH     (1 &lt;&lt; 11)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">define	SPI_MODE_CSSTAT_HIGH    (1 &lt;&lt; 12)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">define	SPI_MODE_CSHOLD_HIGH    (1 &lt;&lt; 13)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">typedef</span> spi_cfg <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>;
 
-<span style="color:#dc322f">int</span> <span style="color:#268bd2">spi_cfg</span>(<span style="color:#dc322f">int</span> fd, <span style="color:#dc322f">int</span> dev, spi_cfg cfg);
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">spi_cfg</span>(<span style="color:#66d9ef">int</span> fd, <span style="color:#66d9ef">int</span> dev, spi_cfg cfg);
 </code></pre></div><p><em>Above: real-life SPI configuration bits indended for setting device settings. Device configurations are stored in bits, and the driver checks if these bits are high or low to change the hardware behavior. A typedef loosely associates an unsigned integer with a <code>spi_cfg</code> so that we know its a special value.</em></p>
 <p>However, we may run into issues when we forget (or neglect) to type alias our configuration and exception types. I recently ran into some undocumented code resembling</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">uint32_t <span style="color:#268bd2">validateData</span>(uint8_t<span style="color:#719e07">*</span> buf, size_t n);
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">uint32_t <span style="color:#a6e22e">validateData</span>(uint8_t<span style="color:#f92672">*</span> buf, size_t n);
 </code></pre></div><p>What does the return of <code>validateData</code> mean? Typically, functions looking like this return 0 on success, or a negative value for an error. But this return is unsigned. Is it a value representing a summary of the input data, like a mean or summation?</p>
 <p>In this library, the return is an exception mask. The original implementors track computational errors in a bitmask. The presence of certain exceptions &ndash; or any exceptions &ndash; influences control flow. The team implemented the bitmasks using a C-style enum:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#719e07">typedef</span> <span style="color:#719e07">enum</span> err_comp_exceptions {
-    COMP_NO_EXCEPTION <span style="color:#719e07">=</span> <span style="color:#2aa198">0</span>,
-    COMP_DIV_BY_ZERO  <span style="color:#719e07">=</span> <span style="color:#2aa198">1</span>,
-    COMP_EXCEEDS_MIN  <span style="color:#719e07">=</span> <span style="color:#2aa198">2</span>,
-    COMP_EXCEEDS_MAX  <span style="color:#719e07">=</span> <span style="color:#2aa198">4</span>,
-    COMP_NOT_ENOUGH   <span style="color:#719e07">=</span> <span style="color:#2aa198">8</span>,
-    <span style="color:#586e75">// Other exceptions...
-</span><span style="color:#586e75"></span>} err_comp_exceptions_t;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">enum</span> err_comp_exceptions {
+    COMP_NO_EXCEPTION <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>,
+    COMP_DIV_BY_ZERO  <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>,
+    COMP_EXCEEDS_MIN  <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>,
+    COMP_EXCEEDS_MAX  <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>,
+    COMP_NOT_ENOUGH   <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>,
+    <span style="color:#75715e">// Other exceptions...
+</span><span style="color:#75715e"></span>} err_comp_exceptions_t;
 </code></pre></div><p>I was using <code>validateData</code> without issues after realizing the API. I just had to be careful with the return. I shouldn't add it to any other <code>uint32_t</code>s, and I shouldn't expect the decimal value to be individually meaningful since it represents many possible values. I should only use the return for checks resembling</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">uint32_t errs <span style="color:#719e07">=</span> validateData(buf, <span style="color:#719e07">sizeof</span>(buf));
-<span style="color:#719e07">if</span> (errs <span style="color:#719e07">&amp;</span> (COMP_EXCEEDS_MIN <span style="color:#719e07">|</span> COMP_EXCEEDS_MAX))
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">uint32_t errs <span style="color:#f92672">=</span> validateData(buf, <span style="color:#66d9ef">sizeof</span>(buf));
+<span style="color:#66d9ef">if</span> (errs <span style="color:#f92672">&amp;</span> (COMP_EXCEEDS_MIN <span style="color:#f92672">|</span> COMP_EXCEEDS_MAX))
 {
-    <span style="color:#586e75">// Do stuff when both ranges were exceeded
-</span><span style="color:#586e75"></span>}
-<span style="color:#719e07">else</span> <span style="color:#719e07">if</span> (err <span style="color:#719e07">&amp;</span> COMP_EXCEEDS_MIN)
+    <span style="color:#75715e">// Do stuff when both ranges were exceeded
+</span><span style="color:#75715e"></span>}
+<span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (err <span style="color:#f92672">&amp;</span> COMP_EXCEEDS_MIN)
 {
-    <span style="color:#586e75">// Do stuff when min was exceeded
-</span><span style="color:#586e75"></span>}
-<span style="color:#719e07">else</span> <span style="color:#719e07">if</span> (err <span style="color:#719e07">&amp;</span> COMP_EXCEEDS_MAX)
+    <span style="color:#75715e">// Do stuff when min was exceeded
+</span><span style="color:#75715e"></span>}
+<span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (err <span style="color:#f92672">&amp;</span> COMP_EXCEEDS_MAX)
 {
-    <span style="color:#586e75">// Do stuff when max was exceeded
-</span><span style="color:#586e75"></span>}
+    <span style="color:#75715e">// Do stuff when max was exceeded
+</span><span style="color:#75715e"></span>}
 </code></pre></div><p>But what if I wasn't careful? I started thinking about the type safety of the API. Nothing <em>really</em> stops me from, for example, adding the exception mask to the index of an array. Even if the API had a C-style <code>typedef</code></p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#719e07">typedef</span> validation_err uint32_t;
-validation_err <span style="color:#268bd2">validateData</span>(uint8_t<span style="color:#719e07">*</span> buf, size_t n);
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">typedef</span> validation_err uint32_t;
+validation_err <span style="color:#a6e22e">validateData</span>(uint8_t<span style="color:#f92672">*</span> buf, size_t n);
 </code></pre></div><p>I could still perform math with a <code>validation_err</code> and other numbers. What would a safer, C++ style exception mask look like? How could it prevent these silly programming errors? And how can we test it?</p>
 <h1 id="safer-flags-and-masks">Safer <code>Flag</code>s and <code>Mask</code>s</h1>
 <p>We can take advantage of a few modern C++ features to implement a safer and testable <code>Mask&lt;Flag&gt;</code> type:</p>
@@ -81,154 +79,154 @@ validation_err <span style="color:#268bd2">validateData</span>(uint8_t<span styl
 <li><code>constexpr</code> constructors. A <code>constexpr</code> constructor allows a struct / class to exist at compile time, provided all of its underlying members can exist at compile-time. When things can exist at compile-time, we can unit test them at compile-time using <code>static_asserts</code></li>
 </ul>
 <p>Let's start by translating the existing <code>err_comp_exceptions_t</code> into an <code>enum class</code>:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">enum</span> <span style="color:#719e07">class</span> <span style="color:#268bd2">ValidationExceptions</span> <span style="color:#719e07">:</span> <span style="color:#dc322f">uint32_t</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">enum</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ValidationExceptions</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">uint32_t</span>
 {
-    COMP_NO_EXCEPTION <span style="color:#719e07">=</span> <span style="color:#2aa198">0</span>,
-    COMP_DIV_BY_ZERO  <span style="color:#719e07">=</span> <span style="color:#2aa198">1</span>,
-    COMP_EXCEEDS_MIN  <span style="color:#719e07">=</span> <span style="color:#2aa198">2</span>,
-    COMP_EXCEEDS_MAX  <span style="color:#719e07">=</span> <span style="color:#2aa198">4</span>,
-    COMP_NOT_ENOUGH   <span style="color:#719e07">=</span> <span style="color:#2aa198">8</span>,
-    <span style="color:#586e75">// ...
-</span><span style="color:#586e75"></span>};
+    COMP_NO_EXCEPTION <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>,
+    COMP_DIV_BY_ZERO  <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>,
+    COMP_EXCEEDS_MIN  <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>,
+    COMP_EXCEEDS_MAX  <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>,
+    COMP_NOT_ENOUGH   <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>,
+    <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>};
 </code></pre></div><p>The <code>: uint32_t</code> syntax looks like class inheritance, but in the context of an <code>enum class</code> it defines the size of the underlying data type. In our case, <code>ValidationExceptions</code> occupies a <code>uint32_t</code>. Everything else is the same.</p>
 <p>If we were to use it in the previous context, it would look pretty ugly, since we would have to namespace qualify and typecast the flags&hellip;</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#dc322f">uint32_t</span> errs <span style="color:#719e07">=</span> validateData(buf, <span style="color:#719e07">sizeof</span>(buf));
-<span style="color:#586e75">// ...
-</span><span style="color:#586e75"></span><span style="color:#719e07">else</span> <span style="color:#268bd2">if</span> (err <span style="color:#719e07">&amp;</span> <span style="color:#719e07">static_cast</span><span style="color:#719e07">&lt;</span><span style="color:#dc322f">uint32_t</span><span style="color:#719e07">&gt;</span>(ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_EXCEEDS_MIN))
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">uint32_t</span> errs <span style="color:#f92672">=</span> validateData(buf, <span style="color:#66d9ef">sizeof</span>(buf));
+<span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (err <span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_EXCEEDS_MIN))
 {
-    <span style="color:#586e75">// Do stuff when min was exceeded
-</span><span style="color:#586e75"></span>}
-<span style="color:#586e75">// ...
+    <span style="color:#75715e">// Do stuff when min was exceeded
+</span><span style="color:#75715e"></span>}
+<span style="color:#75715e">// ...
 </span></code></pre></div><p>We want a way to work directly with the <code>ValidationExceptions</code> as if they were flags in a bitmask, so lets represent that in a new type. We want that other type to handle the operations on the mask and the flags. Let's call that type <code>Mask</code>, and it looks like this:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> Flag<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">Mask</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> Flag<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Mask</span>
 {
-    <span style="color:#dc322f">uint32_t</span> mask;
+    <span style="color:#66d9ef">uint32_t</span> mask;
     
-    <span style="color:#586e75">/* 1 */</span> <span style="color:#719e07">constexpr</span> <span style="color:#268bd2">Mask</span>()          <span style="color:#719e07">:</span> mask(<span style="color:#2aa198">0</span>) {}
-    <span style="color:#586e75">/* 2 */</span> <span style="color:#719e07">constexpr</span> <span style="color:#268bd2">Mask</span>(Flag flag) <span style="color:#719e07">:</span> mask(<span style="color:#719e07">static_cast</span><span style="color:#719e07">&lt;</span><span style="color:#dc322f">uint32_t</span><span style="color:#719e07">&gt;</span>(flag)) {}
+    <span style="color:#75715e">/* 1 */</span> <span style="color:#66d9ef">constexpr</span> <span style="color:#a6e22e">Mask</span>()          <span style="color:#f92672">:</span> mask(<span style="color:#ae81ff">0</span>) {}
+    <span style="color:#75715e">/* 2 */</span> <span style="color:#66d9ef">constexpr</span> <span style="color:#a6e22e">Mask</span>(Flag flag) <span style="color:#f92672">:</span> mask(<span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(flag)) {}
     
-    <span style="color:#586e75">// ...
-</span><span style="color:#586e75"></span>};
+    <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>};
 </code></pre></div><p><code>Mask&lt;Flag&gt;</code> is a generic bitmask compatible with bitflags of type <code>Flag</code>. Our <code>ValidationExceptions</code> are a valid type of <code>Flag</code> that could plug into <code>Mask</code>. We can define a unique type for tracking <code>ValidationExceptions</code> as</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">using</span> ValidationMask <span style="color:#719e07">=</span> Mask<span style="color:#719e07">&lt;</span>ValidationExceptions<span style="color:#719e07">&gt;</span>;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">using</span> ValidationMask <span style="color:#f92672">=</span> Mask<span style="color:#f92672">&lt;</span>ValidationExceptions<span style="color:#f92672">&gt;</span>;
 </code></pre></div><p>Let's explore how we can work with <code>Mask</code>s and <code>Flag</code>s as if they were bits and bitmasks. We define two constructors for a <code>Mask</code>:</p>
 <ol>
 <li>The default constructor. It initializes the mask to zero. This is equivalent to the <code>COMP_NO_EXCEPTION</code> variant in <code>ValidationExceptions</code>. When we default construct a <code>Mask</code>, we mean that &ldquo;there's no exception.&rdquo;</li>
 <li>The constructor with a flag parameter. We <code>static_cast</code> the flag and set the value in <code>mask</code>. Based on our implementation, this also becomes the conversion operator from a <code>Flag</code> to a <code>Mask</code>. This allows a <code>Flag</code> to implicitly become a <code>Mask</code>, a feature that will be useful as we implement bitwise operators.</li>
 </ol>
 <p>When I have a <code>Mask&lt;Flag&gt;</code>, I only want to operate on <code>Flag</code>s of the same type, or other <code>Mask&lt;Flag&gt;</code>s of the same type. I should <em>not</em> be able to AND or OR in any arbitrary numbers, other flags, or other masks. I want to represent these operations on the underlying <code>mask</code> member. With this in mind, let's define the compound OR (<code>|=</code>) and AND (<code>&amp;=</code>) operators. These are like <code>+=</code>, but for <code>|</code> and <code>&amp;</code>.</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> Flag<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">Mask</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> Flag<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Mask</span>
 {
-    <span style="color:#586e75">// ...
-</span><span style="color:#586e75"></span>
-    <span style="color:#719e07">using</span> This <span style="color:#719e07">=</span> Mask<span style="color:#719e07">&lt;</span>Flag<span style="color:#719e07">&gt;</span>;
+    <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">using</span> This <span style="color:#f92672">=</span> Mask<span style="color:#f92672">&lt;</span>Flag<span style="color:#f92672">&gt;</span>;
 
-    <span style="color:#719e07">constexpr</span> This<span style="color:#719e07">&amp;</span> <span style="color:#719e07">operator</span><span style="color:#719e07">|</span><span style="color:#719e07">=</span>(This that)
+    <span style="color:#66d9ef">constexpr</span> This<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">|</span><span style="color:#f92672">=</span>(This that)
     {
-        <span style="color:#719e07">this</span><span style="color:#719e07">-</span><span style="color:#719e07">&gt;</span>mask <span style="color:#719e07">|</span><span style="color:#719e07">=</span> that.mask;
-        <span style="color:#719e07">return</span> <span style="color:#719e07">*</span><span style="color:#719e07">this</span>;
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>mask <span style="color:#f92672">|</span><span style="color:#f92672">=</span> that.mask;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
     }
     
-    <span style="color:#719e07">constexpr</span> This<span style="color:#719e07">&amp;</span> <span style="color:#719e07">operator</span><span style="color:#719e07">&amp;</span><span style="color:#719e07">=</span>(This that)
+    <span style="color:#66d9ef">constexpr</span> This<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">&amp;</span><span style="color:#f92672">=</span>(This that)
     {
-        <span style="color:#719e07">this</span><span style="color:#719e07">-</span><span style="color:#719e07">&gt;</span>mask <span style="color:#719e07">&amp;</span><span style="color:#719e07">=</span> that.mask;
-        <span style="color:#719e07">return</span> <span style="color:#719e07">*</span><span style="color:#719e07">this</span>;
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>mask <span style="color:#f92672">&amp;</span><span style="color:#f92672">=</span> that.mask;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
     }
 
-    <span style="color:#586e75">// ...
-</span><span style="color:#586e75"></span>};
+    <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>};
 </code></pre></div><p>We use <code>using This = Mask&lt;Flag&gt;;</code> so we don't have to type out <code>Mask&lt;Flag&gt;</code> so much. The compound operators work upon the underlying <code>mask</code> members on both function arguments. Notice that we're taking <code>This</code> by <em>copy</em>, not reference. Since we would take any <code>uint32_t</code> by copy, and a <code>Mask&lt;Flag&gt;</code> is just a <code>uint32_t</code> in size, this isn't too big of a deal.</p>
 <p>By this point, we can start setting values in exception masks by ORing / ANDing in flags and other masks:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">ValidationMask mask;
-<span style="color:#719e07">if</span> (<span style="color:#2aa198">0</span> <span style="color:#719e07">=</span><span style="color:#719e07">=</span> denom) <span style="color:#586e75">// prevent divide-by-zero
-</span><span style="color:#586e75"></span>{
-    mask <span style="color:#719e07">|</span><span style="color:#719e07">=</span> ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_DIV_BY_ZERO;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">ValidationMask mask;
+<span style="color:#66d9ef">if</span> (<span style="color:#ae81ff">0</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> denom) <span style="color:#75715e">// prevent divide-by-zero
+</span><span style="color:#75715e"></span>{
+    mask <span style="color:#f92672">|</span><span style="color:#f92672">=</span> ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_DIV_BY_ZERO;
 }
 
-<span style="color:#586e75">// ...
-</span><span style="color:#586e75"></span>
-ValidationMask <span style="color:#268bd2">anotherMask</span>(ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_NOT_ENOUGH);
-mask <span style="color:#719e07">&amp;</span><span style="color:#719e07">=</span> anotherMask;
+<span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+ValidationMask <span style="color:#a6e22e">anotherMask</span>(ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_NOT_ENOUGH);
+mask <span style="color:#f92672">&amp;</span><span style="color:#f92672">=</span> anotherMask;
 </code></pre></div><p>Up above, we OR in a divide-by-zero flag if there was a divide-by-zero condition. Sometime later, we AND with an entirely different mask. We've already achieved the type safety we want, since we cannot OR / AND in arbitrary numbers:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">ValidationMask mask;
-<span style="color:#719e07">if</span> (<span style="color:#2aa198">0</span> <span style="color:#719e07">=</span><span style="color:#719e07">=</span> denom) <span style="color:#586e75">// prevent divide-by-zero
-</span><span style="color:#586e75"></span>{
-    mask <span style="color:#719e07">|</span><span style="color:#719e07">=</span> (<span style="color:#2aa198">1</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> <span style="color:#2aa198">0</span>); <span style="color:#586e75">// ERROR: does not compile! 
-</span><span style="color:#586e75"></span>}
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">ValidationMask mask;
+<span style="color:#66d9ef">if</span> (<span style="color:#ae81ff">0</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> denom) <span style="color:#75715e">// prevent divide-by-zero
+</span><span style="color:#75715e"></span>{
+    mask <span style="color:#f92672">|</span><span style="color:#f92672">=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>); <span style="color:#75715e">// ERROR: does not compile! 
+</span><span style="color:#75715e"></span>}
 
-<span style="color:#586e75">// ...
-</span><span style="color:#586e75"></span>
-<span style="color:#dc322f">uint32_t</span> anotherMask <span style="color:#719e07">=</span> <span style="color:#2aa198">8</span>;
-mask <span style="color:#719e07">&amp;</span><span style="color:#719e07">=</span> anotherMask;    <span style="color:#586e75">// ERROR: does not compile!
+<span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">uint32_t</span> anotherMask <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>;
+mask <span style="color:#f92672">&amp;</span><span style="color:#f92672">=</span> anotherMask;    <span style="color:#75715e">// ERROR: does not compile!
 </span></code></pre></div><p>In order to check the values in the mask, it would be nice to define the binary operators <code>|</code> and <code>&amp;</code>. We can express those in terms of the compound operators. (We declare them <code>friend</code> so that they're technically defined &ldquo;outside of the class.&rdquo; We define the returns as <code>const</code> following some good <a href="http://courses.cms.caltech.edu/cs11/material/cpp/donnie/cpp-ops.html">rules of thumb</a>.)</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> Flag<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">Mask</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> Flag<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Mask</span>
 {
-    <span style="color:#586e75">// ...
-</span><span style="color:#586e75"></span>    
-    <span style="color:#719e07">friend</span> <span style="color:#719e07">constexpr</span> <span style="color:#719e07">const</span> This <span style="color:#719e07">operator</span><span style="color:#719e07">|</span>(This lhs, This rhs)
+    <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>    
+    <span style="color:#66d9ef">friend</span> <span style="color:#66d9ef">constexpr</span> <span style="color:#66d9ef">const</span> This <span style="color:#66d9ef">operator</span><span style="color:#f92672">|</span>(This lhs, This rhs)
     {
-        lhs <span style="color:#719e07">|</span><span style="color:#719e07">=</span> rhs;
-        <span style="color:#719e07">return</span> lhs;
+        lhs <span style="color:#f92672">|</span><span style="color:#f92672">=</span> rhs;
+        <span style="color:#66d9ef">return</span> lhs;
     }
     
-    <span style="color:#719e07">friend</span> <span style="color:#719e07">constexpr</span> <span style="color:#719e07">const</span> This <span style="color:#719e07">operator</span><span style="color:#719e07">&amp;</span>(This lhs, This rhs)
+    <span style="color:#66d9ef">friend</span> <span style="color:#66d9ef">constexpr</span> <span style="color:#66d9ef">const</span> This <span style="color:#66d9ef">operator</span><span style="color:#f92672">&amp;</span>(This lhs, This rhs)
     {
-        lhs <span style="color:#719e07">&amp;</span><span style="color:#719e07">=</span> rhs;
-        <span style="color:#719e07">return</span> lhs;
+        lhs <span style="color:#f92672">&amp;</span><span style="color:#f92672">=</span> rhs;
+        <span style="color:#66d9ef">return</span> lhs;
     }
 
-    <span style="color:#719e07">explicit</span> <span style="color:#719e07">operator</span> <span style="color:#268bd2">bool</span>() <span style="color:#719e07">const</span> { <span style="color:#719e07">return</span> mask <span style="color:#719e07">&gt;</span> <span style="color:#2aa198">0</span>; }
+    <span style="color:#66d9ef">explicit</span> <span style="color:#66d9ef">operator</span> <span style="color:#a6e22e">bool</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> mask <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>; }
 };
 </code></pre></div><p>We also add the <code>operator bool()</code>, allowing our <code>Mask&lt;Flag&gt;</code> to convert into a <code>bool</code> for use in <code>if</code> statements. We convert to <code>true</code> if the mask is non-zero, else <code>false</code>. With these in place, we can start checking our masks for any exceptions, or for specific flags:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">if</span> (mask <span style="color:#719e07">&amp;</span> ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_DIV_BY_ZERO)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">if</span> (mask <span style="color:#f92672">&amp;</span> ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_DIV_BY_ZERO)
 {
-    <span style="color:#586e75">// If there was a divide by zero error...
-</span><span style="color:#586e75"></span>}
-<span style="color:#719e07">else</span> <span style="color:#268bd2">if</span> (mask)
+    <span style="color:#75715e">// If there was a divide by zero error...
+</span><span style="color:#75715e"></span>}
+<span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (mask)
 {
-    <span style="color:#586e75">// If there was any error at all...
-</span><span style="color:#586e75"></span>}
+    <span style="color:#75715e">// If there was any error at all...
+</span><span style="color:#75715e"></span>}
 </code></pre></div><h1 id="compile-time-unit-testing">Compile-time unit testing</h1>
 <p>I love unit testing, even if it's little things like this. Since our <code>Mask&lt;Flag&gt;</code> is fully <code>constexpr</code>, we can test it at compile time using <code>static_asserts</code>. If you go with this approach, I recommend putting these in a relevant source file and not a header so that if they fail, our compile-time errors aren't numerous.</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">static_assert</span>(
-    (ValidationMask(ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_NOT_ENOUGH)
-     <span style="color:#719e07">|</span> ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_DIV_BY_ZERO).mask
-    <span style="color:#719e07">=</span><span style="color:#719e07">=</span>
-    (<span style="color:#719e07">static_cast</span><span style="color:#719e07">&lt;</span><span style="color:#dc322f">uint32_t</span><span style="color:#719e07">&gt;</span>(ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_NOT_ENOUGH)
-     <span style="color:#719e07">|</span> <span style="color:#719e07">static_cast</span><span style="color:#719e07">&lt;</span><span style="color:#dc322f">uint32_t</span><span style="color:#719e07">&gt;</span>(ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_DIV_BY_ZERO)),
-    <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">Failed to OR mask and flag</span><span style="color:#2aa198">&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">static_assert</span>(
+    (ValidationMask(ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_NOT_ENOUGH)
+     <span style="color:#f92672">|</span> ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_DIV_BY_ZERO).mask
+    <span style="color:#f92672">=</span><span style="color:#f92672">=</span>
+    (<span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_NOT_ENOUGH)
+     <span style="color:#f92672">|</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_DIV_BY_ZERO)),
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Failed to OR mask and flag</span><span style="color:#e6db74">&#34;</span>
 );
 
-<span style="color:#719e07">static_assert</span>(
-    (ValidationMask(ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_NOT_ENOUGH)
-     <span style="color:#719e07">&amp;</span> ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_DIV_BY_ZERO).mask
-    <span style="color:#719e07">=</span><span style="color:#719e07">=</span>
-    (<span style="color:#719e07">static_cast</span><span style="color:#719e07">&lt;</span><span style="color:#dc322f">uint32_t</span><span style="color:#719e07">&gt;</span>(ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_NOT_ENOUGH)
-     <span style="color:#719e07">&amp;</span> <span style="color:#719e07">static_cast</span><span style="color:#719e07">&lt;</span><span style="color:#dc322f">uint32_t</span><span style="color:#719e07">&gt;</span>(ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_DIV_BY_ZERO)),
-    <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">Failed to AND mask and flag</span><span style="color:#2aa198">&#34;</span>
+<span style="color:#66d9ef">static_assert</span>(
+    (ValidationMask(ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_NOT_ENOUGH)
+     <span style="color:#f92672">&amp;</span> ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_DIV_BY_ZERO).mask
+    <span style="color:#f92672">=</span><span style="color:#f92672">=</span>
+    (<span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_NOT_ENOUGH)
+     <span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_DIV_BY_ZERO)),
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Failed to AND mask and flag</span><span style="color:#e6db74">&#34;</span>
 );
 </code></pre></div><p>I'll admit: they're not the nicest thing to look at. But we get the guarantees that they work every time we run our code, not just when we run our unit test suite. Notice that we cheat by accessing the intentionally-public <code>mask</code> member. Exposing the <code>mask</code> member is our escape-hatch if / when we need to interact with existing code. However, seeing the <code>mask</code> member out and about should raise some eyebrows, and it's our cue to smell the code a little more&hellip;</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>We took an API for storing configurations and exceptions in a bitmask and made it type safe. At compile-time, we can catch silly mistakes that wouldn't make sense, like adding an exception mask to another number. We can enforce guarantees about our code, such as a <code>ValidationMask</code> that only works with <code>ValidationExceptions</code> and not other types of strongly / weakly typed flags. We can refactor our API to be explicit. We can simply change our types, not our implementation, in order to gain the guarantees.</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#586e75">// new signature...
-</span><span style="color:#586e75"></span>ValidationMask <span style="color:#268bd2">validateData</span>(uint8_t<span style="color:#719e07">*</span> buf, size_t n);
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">// new signature...
+</span><span style="color:#75715e"></span>ValidationMask <span style="color:#a6e22e">validateData</span>(uint8_t<span style="color:#f92672">*</span> buf, size_t n);
 
-<span style="color:#586e75">// old way...
-</span><span style="color:#586e75"></span>uint32_t mask <span style="color:#719e07">=</span> <span style="color:#2aa198">0</span>;
-<span style="color:#719e07">if</span> (<span style="color:#2aa198">0</span> <span style="color:#719e07">=</span><span style="color:#719e07">=</span> denom)
+<span style="color:#75715e">// old way...
+</span><span style="color:#75715e"></span>uint32_t mask <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+<span style="color:#66d9ef">if</span> (<span style="color:#ae81ff">0</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> denom)
 {
-    mask <span style="color:#719e07">|</span><span style="color:#719e07">=</span> COMP_DIV_BY_ZERO;
+    mask <span style="color:#f92672">|</span><span style="color:#f92672">=</span> COMP_DIV_BY_ZERO;
 }
 
-<span style="color:#586e75">// new way...
-</span><span style="color:#586e75"></span>ValidationMask mask; <span style="color:#586e75">// change the type (one change)
-</span><span style="color:#586e75"></span><span style="color:#719e07">if</span> (<span style="color:#2aa198">0</span> <span style="color:#719e07">=</span><span style="color:#719e07">=</span> denom)
+<span style="color:#75715e">// new way...
+</span><span style="color:#75715e"></span>ValidationMask mask; <span style="color:#75715e">// change the type (one change)
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (<span style="color:#ae81ff">0</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> denom)
 {
-    <span style="color:#586e75">// qualify the type (another change)
-</span><span style="color:#586e75"></span>    mask <span style="color:#719e07">|</span><span style="color:#719e07">=</span> ValidationExceptions<span style="color:#719e07">:</span><span style="color:#719e07">:</span>COMP_DIV_BY_ZERO;
+    <span style="color:#75715e">// qualify the type (another change)
+</span><span style="color:#75715e"></span>    mask <span style="color:#f92672">|</span><span style="color:#f92672">=</span> ValidationExceptions<span style="color:#f92672">:</span><span style="color:#f92672">:</span>COMP_DIV_BY_ZERO;
 }
 </code></pre></div><h1 id="future-work">Future work</h1>
 <ul>

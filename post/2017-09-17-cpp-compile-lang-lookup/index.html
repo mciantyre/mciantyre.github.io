@@ -17,8 +17,6 @@
 	<nav>
 		<ul>
 			
-			<li><a href="/">Home</a></li>
-			
 			<li><a href="/tags">Tags</a></li>
 			
 		</ul>
@@ -50,60 +48,60 @@ selected system language</li>
 <p>I've provided a simple example below. However, the codebase has hundreds of
 strings; the indexing enum is huge. We also deal with at least 8 languages. It's
 easy to make a mistake when adding new strings, as we'll soon see.</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#586e75">// Possible system languages
-</span><span style="color:#586e75"></span><span style="color:#719e07">enum</span> Languages {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">// Possible system languages
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">enum</span> Languages {
     ENGLISH,
     SPANISH,
     NUMBER_OF_LANGUAGES
 };
 
-<span style="color:#586e75">// English strings
-</span><span style="color:#586e75"></span><span style="color:#dc322f">char</span> STR_ENG_HELLO[] <span style="color:#719e07">=</span> {<span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">H</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">e</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">l</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">l</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">o</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">\0</span><span style="color:#2aa198">&#39;</span>};
-<span style="color:#dc322f">char</span> STR_ENG_GOODBYE[] <span style="color:#719e07">=</span> {<span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">G</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">o</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">o</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">d</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">b</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">y</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">e</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">\0</span><span style="color:#2aa198">&#39;</span>};
+<span style="color:#75715e">// English strings
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span> STR_ENG_HELLO[] <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">H</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">e</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">l</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">l</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">o</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">\0</span><span style="color:#e6db74">&#39;</span>};
+<span style="color:#66d9ef">char</span> STR_ENG_GOODBYE[] <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">G</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">o</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">o</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">d</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">e</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">\0</span><span style="color:#e6db74">&#39;</span>};
 
-<span style="color:#586e75">// Spanish strings
-</span><span style="color:#586e75"></span><span style="color:#dc322f">char</span> STR_ESP_HELLO[] <span style="color:#719e07">=</span> {<span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">H</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">o</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">l</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">a</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">\0</span><span style="color:#2aa198">&#39;</span>};
-<span style="color:#dc322f">char</span> STR_ESP_GOODBYE[] <span style="color:#719e07">=</span> {<span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">A</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">d</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">i</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">o</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">s</span><span style="color:#2aa198">&#39;</span>, <span style="color:#2aa198"></span><span style="color:#2aa198">&#39;</span><span style="color:#2aa198">\0</span><span style="color:#2aa198">&#39;</span>};
+<span style="color:#75715e">// Spanish strings
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span> STR_ESP_HELLO[] <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">H</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">o</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">l</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">\0</span><span style="color:#e6db74">&#39;</span>};
+<span style="color:#66d9ef">char</span> STR_ESP_GOODBYE[] <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">d</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">i</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">o</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">s</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">\0</span><span style="color:#e6db74">&#39;</span>};
 
-<span style="color:#586e75">// The enumeration describes how strings are
-</span><span style="color:#586e75"></span><span style="color:#586e75">// ordered in each array.
-</span><span style="color:#586e75"></span><span style="color:#719e07">enum</span> LanguageString {
+<span style="color:#75715e">// The enumeration describes how strings are
+</span><span style="color:#75715e"></span><span style="color:#75715e">// ordered in each array.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">enum</span> LanguageString {
     LANG_HELLO,
     LANG_GOODBYE,
     NUMBER_OF_STRINGS
 };
 
-<span style="color:#586e75">// Must maintain the order in each
-</span><span style="color:#586e75"></span><span style="color:#586e75">// language array
-</span><span style="color:#586e75"></span><span style="color:#719e07">static</span> <span style="color:#dc322f">char</span> <span style="color:#719e07">*</span>ENGLISH_STRINGS[NUMBER_OF_STRINGS] <span style="color:#719e07">=</span> {
+<span style="color:#75715e">// Must maintain the order in each
+</span><span style="color:#75715e"></span><span style="color:#75715e">// language array
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>ENGLISH_STRINGS[NUMBER_OF_STRINGS] <span style="color:#f92672">=</span> {
     STR_ENG_HELLO,
     STR_ENG_GOODBYE,
 };
 
-<span style="color:#719e07">static</span> <span style="color:#dc322f">char</span> <span style="color:#719e07">*</span>SPANISH_STRINGS[NUMBER_OF_STRINGS] <span style="color:#719e07">=</span> {
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>SPANISH_STRINGS[NUMBER_OF_STRINGS] <span style="color:#f92672">=</span> {
     STR_ESP_HELLO,
     STR_ESP_GOODBYE,
 };
 
-<span style="color:#586e75">// Our default language is english
-</span><span style="color:#586e75"></span><span style="color:#719e07">static</span> <span style="color:#dc322f">char</span> <span style="color:#719e07">*</span><span style="color:#719e07">*</span>language <span style="color:#719e07">=</span> ENGLISH_STRINGS;
+<span style="color:#75715e">// Our default language is english
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span><span style="color:#f92672">*</span>language <span style="color:#f92672">=</span> ENGLISH_STRINGS;
 
-<span style="color:#586e75">// Change the system lanuage
-</span><span style="color:#586e75"></span><span style="color:#dc322f">void</span> <span style="color:#268bd2">switch_language</span>(<span style="color:#719e07">enum</span> Languages lang)
+<span style="color:#75715e">// Change the system lanuage
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">switch_language</span>(<span style="color:#66d9ef">enum</span> Languages lang)
 {
-    <span style="color:#719e07">switch</span>(lang)
+    <span style="color:#66d9ef">switch</span>(lang)
     {
-        <span style="color:#719e07">case</span> ENGLISH: language <span style="color:#719e07">=</span> ENGLISH_STRINGS; <span style="color:#719e07">break</span>;
-        <span style="color:#719e07">case</span> SPANISH: language <span style="color:#719e07">=</span> SPANISH_STRINGS; <span style="color:#719e07">break</span>;
-        <span style="color:#586e75">// Default is arbitrary
-</span><span style="color:#586e75"></span>        <span style="color:#719e07">default</span><span style="color:#719e07">:</span>      language <span style="color:#719e07">=</span> ENGLISH_STRINGS; <span style="color:#719e07">break</span>;
+        <span style="color:#66d9ef">case</span> ENGLISH: language <span style="color:#f92672">=</span> ENGLISH_STRINGS; <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> SPANISH: language <span style="color:#f92672">=</span> SPANISH_STRINGS; <span style="color:#66d9ef">break</span>;
+        <span style="color:#75715e">// Default is arbitrary
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>      language <span style="color:#f92672">=</span> ENGLISH_STRINGS; <span style="color:#66d9ef">break</span>;
     }
 }
 
-<span style="color:#586e75">// Get a string depending on the system language
-</span><span style="color:#586e75"></span><span style="color:#719e07">const</span> <span style="color:#dc322f">char</span><span style="color:#719e07">*</span> <span style="color:#719e07">const</span> <span style="color:#268bd2">get_string</span>(<span style="color:#719e07">enum</span> LanguageString str)
+<span style="color:#75715e">// Get a string depending on the system language
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">get_string</span>(<span style="color:#66d9ef">enum</span> LanguageString str)
 {
-    <span style="color:#719e07">return</span> language[str];
+    <span style="color:#66d9ef">return</span> language[str];
 }
 </code></pre></div><p>Accessing strings is mediated through <code>get_string</code>. When the user changes the
 sytem language, <code>switch_language</code> handles the swapping of the language arrays,
@@ -125,44 +123,44 @@ project, I was still interested in exploring a solution.</p>
 <p>We keep the idea of having a collection of strings from the same language. However,
 instead of keeping the indexing enum and string separate, we pair the two
 together in a <code>LangPair</code> compile-time struct.</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span>LanguageKey Key, <span style="color:#719e07">const</span> <span style="color:#dc322f">char</span><span style="color:#719e07">*</span> <span style="color:#719e07">const</span> S<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">LangPair</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span>LanguageKey Key, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">const</span> S<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">LangPair</span>
 {
-    <span style="color:#719e07">static</span> <span style="color:#719e07">constexpr</span> LanguageKey key <span style="color:#719e07">=</span> Key;
-    <span style="color:#719e07">static</span> <span style="color:#719e07">constexpr</span> <span style="color:#719e07">const</span> <span style="color:#dc322f">char</span><span style="color:#719e07">*</span> <span style="color:#719e07">const</span> value <span style="color:#719e07">=</span> S;
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">constexpr</span> LanguageKey key <span style="color:#f92672">=</span> Key;
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">constexpr</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">const</span> value <span style="color:#f92672">=</span> S;
 };
 </code></pre></div><p>The goal, at compile time, is to create a list of <code>LangPair</code>s that map a
 <code>LanguageKey</code> to a string <code>S</code> of a particular language. We want something
 resembling</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">using</span> EnglishStrings <span style="color:#719e07">=</span> type_list
-<span style="color:#719e07">&lt;</span>
-    LangPair<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_HELLO    , STR_ENG_HELLO<span style="color:#719e07">&gt;</span>,   <span style="color:#586e75">// Hello before goodbye
-</span><span style="color:#586e75"></span>    LangPair<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_GOODBYE  , STR_ENG_GOODBYE<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">&gt;</span>;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">using</span> EnglishStrings <span style="color:#f92672">=</span> type_list
+<span style="color:#f92672">&lt;</span>
+    LangPair<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_HELLO    , STR_ENG_HELLO<span style="color:#f92672">&gt;</span>,   <span style="color:#75715e">// Hello before goodbye
+</span><span style="color:#75715e"></span>    LangPair<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_GOODBYE  , STR_ENG_GOODBYE<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;</span>;
 
-<span style="color:#719e07">using</span> SpanishStrings <span style="color:#719e07">=</span> type_list
-<span style="color:#719e07">&lt;</span>
-    LangPair<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_GOODBYE  , STR_ESP_GOODBYE<span style="color:#719e07">&gt;</span>, <span style="color:#586e75">// Goodbye before hello
-</span><span style="color:#586e75"></span>    LangPair<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_HELLO    , STR_ESP_HELLO<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">&gt;</span>;
+<span style="color:#66d9ef">using</span> SpanishStrings <span style="color:#f92672">=</span> type_list
+<span style="color:#f92672">&lt;</span>
+    LangPair<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_GOODBYE  , STR_ESP_GOODBYE<span style="color:#f92672">&gt;</span>, <span style="color:#75715e">// Goodbye before hello
+</span><span style="color:#75715e"></span>    LangPair<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_HELLO    , STR_ESP_HELLO<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;</span>;
 </code></pre></div><p>We use a <code>type_list</code> to create a collection of <code>LangPair</code>s. Notice that we
 swapped the order of the strings between the two lists. We'll show
 that the design is resiliant to a re-order, and any issues with missing strings
 are caught at compile-time. (Of course, we cannot catch incorrect pairings!)</p>
 <p>The <code>type_list</code> resembles a &ldquo;cons list&rdquo; in functional languages. It is defined as</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span>...<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">type_list</span>;                                   <span style="color:#586e75">// (1)
-</span><span style="color:#586e75"></span>
-<span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> Head, <span style="color:#719e07">typename</span> ...Tail<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">type_list</span><span style="color:#719e07">&lt;</span>Head, Tail...<span style="color:#719e07">&gt;</span> <span style="color:#719e07">:</span> type_list<span style="color:#719e07">&lt;</span>Head<span style="color:#719e07">&gt;</span>   <span style="color:#586e75">// (2)
-</span><span style="color:#586e75"></span>{
-    <span style="color:#719e07">using</span> tail <span style="color:#719e07">=</span> type_list<span style="color:#719e07">&lt;</span>Tail...<span style="color:#719e07">&gt;</span>;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span>...<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">type_list</span>;                                   <span style="color:#75715e">// (1)
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> Head, <span style="color:#66d9ef">typename</span> ...Tail<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">type_list</span><span style="color:#f92672">&lt;</span>Head, Tail...<span style="color:#f92672">&gt;</span> <span style="color:#f92672">:</span> type_list<span style="color:#f92672">&lt;</span>Head<span style="color:#f92672">&gt;</span>   <span style="color:#75715e">// (2)
+</span><span style="color:#75715e"></span>{
+    <span style="color:#66d9ef">using</span> tail <span style="color:#f92672">=</span> type_list<span style="color:#f92672">&lt;</span>Tail...<span style="color:#f92672">&gt;</span>;
 };
 
-<span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> Head<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">type_list</span><span style="color:#719e07">&lt;</span>Head<span style="color:#719e07">&gt;</span>                              <span style="color:#586e75">// (3)
-</span><span style="color:#586e75"></span>{
-    <span style="color:#719e07">using</span> head <span style="color:#719e07">=</span> Head;
+<span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> Head<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">type_list</span><span style="color:#f92672">&lt;</span>Head<span style="color:#f92672">&gt;</span>                              <span style="color:#75715e">// (3)
+</span><span style="color:#75715e"></span>{
+    <span style="color:#66d9ef">using</span> head <span style="color:#f92672">=</span> Head;
 };
 </code></pre></div><p><code>type_list</code> accepts a variadic number of types (1). One specialization defines a
 <code>type_list</code> with a head and a variadic tail; that is, one or more tail elements
@@ -172,69 +170,69 @@ instantiated by (2) inherits from a <code>type_list</code> of a single element d
 (3), so a list of more than one element has both a &ldquo;head&rdquo; and a &ldquo;tail.&rdquo;</p>
 <p>We can brute-force <code>type_list</code> traversal as you would access the
 values of a functionally linked-list:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">using</span> some_list <span style="color:#719e07">=</span> type_list<span style="color:#719e07">&lt;</span><span style="color:#dc322f">int</span>, <span style="color:#dc322f">bool</span>, <span style="color:#dc322f">float</span>, <span style="color:#dc322f">double</span>, <span style="color:#dc322f">long</span><span style="color:#719e07">&gt;</span>;
-<span style="color:#719e07">using</span> third <span style="color:#719e07">=</span> <span style="color:#719e07">typename</span> some_list<span style="color:#719e07">:</span><span style="color:#719e07">:</span>tail<span style="color:#719e07">:</span><span style="color:#719e07">:</span>tail<span style="color:#719e07">:</span><span style="color:#719e07">:</span>head;
-<span style="color:#719e07">static_assert</span>(std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>is_same<span style="color:#719e07">&lt;</span>third, <span style="color:#dc322f">float</span><span style="color:#719e07">&gt;</span><span style="color:#719e07">:</span><span style="color:#719e07">:</span>value, <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">It&#39;s not a float!?</span><span style="color:#2aa198">&#34;</span>);
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">using</span> some_list <span style="color:#f92672">=</span> type_list<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">float</span>, <span style="color:#66d9ef">double</span>, <span style="color:#66d9ef">long</span><span style="color:#f92672">&gt;</span>;
+<span style="color:#66d9ef">using</span> third <span style="color:#f92672">=</span> <span style="color:#66d9ef">typename</span> some_list<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tail<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tail<span style="color:#f92672">:</span><span style="color:#f92672">:</span>head;
+<span style="color:#66d9ef">static_assert</span>(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>is_same<span style="color:#f92672">&lt;</span>third, <span style="color:#66d9ef">float</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">:</span><span style="color:#f92672">:</span>value, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">It&#39;s not a float!?</span><span style="color:#e6db74">&#34;</span>);
 </code></pre></div><p>We traverse the list by peeling away the list with <code>tail</code> then grabbing the
 head element with <code>head</code>.</p>
 <p>We need a way to lookup a key in the <code>type_list</code> and get the related key-value
 pairing. A compile-time function <code>lookup</code> will have the signature</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span>
-<span style="color:#719e07">&lt;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span>
+<span style="color:#f92672">&lt;</span>
     LanguageKey Key,
-    <span style="color:#719e07">class</span> <span style="color:#268bd2">TList</span>,
-    <span style="color:#dc322f">bool</span> Found <span style="color:#719e07">=</span> TList<span style="color:#719e07">:</span><span style="color:#719e07">:</span>head<span style="color:#719e07">:</span><span style="color:#719e07">:</span>key <span style="color:#719e07">=</span><span style="color:#719e07">=</span> Key
-<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">lookup</span>;
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TList</span>,
+    <span style="color:#66d9ef">bool</span> Found <span style="color:#f92672">=</span> TList<span style="color:#f92672">:</span><span style="color:#f92672">:</span>head<span style="color:#f92672">:</span><span style="color:#f92672">:</span>key <span style="color:#f92672">=</span><span style="color:#f92672">=</span> Key
+<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">lookup</span>;
 </code></pre></div><p>Where the <code>class TList</code> will be a <code>type_list</code>. There is no definition yet;
 we'll define specializations below.</p>
 <p>We declared a <code>bool Found</code> to indicate that the key of the head element matches the key we want. A user should never specify <code>Found</code> directly; the default value is the equality of the list's head element to the key. If <code>Found</code> is false, we want to keep looking down the tail of the list:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span>
-<span style="color:#719e07">&lt;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span>
+<span style="color:#f92672">&lt;</span>
     LanguageKey Key,
-    <span style="color:#719e07">class</span> <span style="color:#268bd2">TList</span>
-<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">lookup</span><span style="color:#719e07">&lt;</span>Key, TList, <span style="color:#b58900">false</span><span style="color:#719e07">&gt;</span>    <span style="color:#586e75">// Specialization: Found is false
-</span><span style="color:#586e75"></span>{
-    <span style="color:#719e07">using</span> type <span style="color:#719e07">=</span>                    <span style="color:#586e75">// type is the type returned by a
-</span><span style="color:#586e75"></span>        <span style="color:#719e07">typename</span> lookup<span style="color:#719e07">&lt;</span>            <span style="color:#586e75">// subsequent lookup down the tail
-</span><span style="color:#586e75"></span>            Key,
-            <span style="color:#719e07">typename</span> TList<span style="color:#719e07">:</span><span style="color:#719e07">:</span>tail,
-            TList<span style="color:#719e07">:</span><span style="color:#719e07">:</span>tail<span style="color:#719e07">:</span><span style="color:#719e07">:</span>head<span style="color:#719e07">:</span><span style="color:#719e07">:</span>key <span style="color:#719e07">=</span><span style="color:#719e07">=</span> Key
-        <span style="color:#719e07">&gt;</span><span style="color:#719e07">:</span><span style="color:#719e07">:</span>type;
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TList</span>
+<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">lookup</span><span style="color:#f92672">&lt;</span>Key, TList, false<span style="color:#f92672">&gt;</span>    <span style="color:#75715e">// Specialization: Found is false
+</span><span style="color:#75715e"></span>{
+    <span style="color:#66d9ef">using</span> type <span style="color:#f92672">=</span>                    <span style="color:#75715e">// type is the type returned by a
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">typename</span> lookup<span style="color:#f92672">&lt;</span>            <span style="color:#75715e">// subsequent lookup down the tail
+</span><span style="color:#75715e"></span>            Key,
+            <span style="color:#66d9ef">typename</span> TList<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tail,
+            TList<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tail<span style="color:#f92672">:</span><span style="color:#f92672">:</span>head<span style="color:#f92672">:</span><span style="color:#f92672">:</span>key <span style="color:#f92672">=</span><span style="color:#f92672">=</span> Key
+        <span style="color:#f92672">&gt;</span><span style="color:#f92672">:</span><span style="color:#f92672">:</span>type;
 };
 </code></pre></div><p>If any <code>lookup</code> finds that the head's key matches <code>Key</code>, return that type:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span>
-<span style="color:#719e07">&lt;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span>
+<span style="color:#f92672">&lt;</span>
     LanguageKey Key,
-    <span style="color:#719e07">class</span> <span style="color:#268bd2">TList</span>
-<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">struct</span> <span style="color:#268bd2">lookup</span><span style="color:#719e07">&lt;</span>Key, TList, <span style="color:#b58900">true</span><span style="color:#719e07">&gt;</span>     <span style="color:#586e75">// Specialization: Found is true
-</span><span style="color:#586e75"></span>{
-    <span style="color:#719e07">using</span> type <span style="color:#719e07">=</span> <span style="color:#719e07">typename</span> TList<span style="color:#719e07">:</span><span style="color:#719e07">:</span>head;
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TList</span>
+<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">lookup</span><span style="color:#f92672">&lt;</span>Key, TList, true<span style="color:#f92672">&gt;</span>     <span style="color:#75715e">// Specialization: Found is true
+</span><span style="color:#75715e"></span>{
+    <span style="color:#66d9ef">using</span> type <span style="color:#f92672">=</span> <span style="color:#66d9ef">typename</span> TList<span style="color:#f92672">:</span><span style="color:#f92672">:</span>head;
 };
 </code></pre></div><p>Finally, we can create a <code>get_string</code> function to return language strings at runtime:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span>LanguageKey Key<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">const</span> <span style="color:#dc322f">char</span><span style="color:#719e07">*</span> <span style="color:#719e07">const</span> get_string(<span style="color:#719e07">const</span> Language language) <span style="color:#719e07">noexcept</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span>LanguageKey Key<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">const</span> get_string(<span style="color:#66d9ef">const</span> Language language) <span style="color:#66d9ef">noexcept</span>
 {
-    <span style="color:#719e07">return</span> (Language<span style="color:#719e07">:</span><span style="color:#719e07">:</span>ENGLISH <span style="color:#719e07">=</span><span style="color:#719e07">=</span> language) <span style="color:#719e07">?</span> lookup<span style="color:#719e07">&lt;</span>Key, EnglishStrings<span style="color:#719e07">&gt;</span><span style="color:#719e07">:</span><span style="color:#719e07">:</span>type<span style="color:#719e07">:</span><span style="color:#719e07">:</span>value
-         : (Language<span style="color:#719e07">:</span><span style="color:#719e07">:</span>SPANISH <span style="color:#719e07">=</span><span style="color:#719e07">=</span> language) <span style="color:#719e07">?</span> lookup<span style="color:#719e07">&lt;</span>Key, SpanishStrings<span style="color:#719e07">&gt;</span><span style="color:#719e07">:</span><span style="color:#719e07">:</span>type<span style="color:#719e07">:</span><span style="color:#719e07">:</span>value
-         <span style="color:#586e75">// Unreachable, but required. Compilation would fail before this is reached at runtime.
-</span><span style="color:#586e75"></span>         <span style="color:#719e07">:</span> <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">NOT FOUND</span><span style="color:#2aa198">&#34;</span>;
+    <span style="color:#66d9ef">return</span> (Language<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ENGLISH <span style="color:#f92672">=</span><span style="color:#f92672">=</span> language) <span style="color:#f92672">?</span> lookup<span style="color:#f92672">&lt;</span>Key, EnglishStrings<span style="color:#f92672">&gt;</span><span style="color:#f92672">:</span><span style="color:#f92672">:</span>type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>value
+         : (Language<span style="color:#f92672">:</span><span style="color:#f92672">:</span>SPANISH <span style="color:#f92672">=</span><span style="color:#f92672">=</span> language) <span style="color:#f92672">?</span> lookup<span style="color:#f92672">&lt;</span>Key, SpanishStrings<span style="color:#f92672">&gt;</span><span style="color:#f92672">:</span><span style="color:#f92672">:</span>type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>value
+         <span style="color:#75715e">// Unreachable, but required. Compilation would fail before this is reached at runtime.
+</span><span style="color:#75715e"></span>         <span style="color:#f92672">:</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">NOT FOUND</span><span style="color:#e6db74">&#34;</span>;
 };
 
 
-<span style="color:#719e07">static</span> Language m_language <span style="color:#719e07">=</span> Language<span style="color:#719e07">:</span><span style="color:#719e07">:</span>ENGLISH;
+<span style="color:#66d9ef">static</span> Language m_language <span style="color:#f92672">=</span> Language<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ENGLISH;
 
-<span style="color:#dc322f">int</span> <span style="color:#268bd2">main</span>(<span style="color:#dc322f">int</span> argc, <span style="color:#719e07">const</span> <span style="color:#dc322f">char</span> <span style="color:#719e07">*</span> argv[]) {
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> argv[]) {
     
-    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>cout <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> get_string<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_HELLO<span style="color:#719e07">&gt;</span>(m_language) <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>endl;
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> get_string<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_HELLO<span style="color:#f92672">&gt;</span>(m_language) <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>endl;
     
-    <span style="color:#586e75">// The user &#34;changes languages&#34;...
-</span><span style="color:#586e75"></span>    m_language <span style="color:#719e07">=</span> Language<span style="color:#719e07">:</span><span style="color:#719e07">:</span>SPANISH;
+    <span style="color:#75715e">// The user &#34;changes languages&#34;...
+</span><span style="color:#75715e"></span>    m_language <span style="color:#f92672">=</span> Language<span style="color:#f92672">:</span><span style="color:#f92672">:</span>SPANISH;
     
-    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>cout <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> get_string<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_GOODBYE<span style="color:#719e07">&gt;</span>(m_language) <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>endl;
-    <span style="color:#719e07">return</span> <span style="color:#2aa198">0</span>;
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> get_string<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_GOODBYE<span style="color:#f92672">&gt;</span>(m_language) <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>endl;
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 }
 </code></pre></div><p><code>get_string</code> accepts a <code>LanguageKey</code> constant as a type argument, and
 a <code>Language</code> enumeration run-time argument. The run-time argument is the current
@@ -242,43 +240,43 @@ system language.</p>
 <p>Since string lookup is performed at compile-time, there are instances of
 <code>get_string</code> for each <code>LanguageKey</code> argument provided to the function.
 It's as if we wrote out each function manually:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#586e75">// When the template argument is LanguageKey::LANG_HELLO...
-</span><span style="color:#586e75"></span><span style="color:#719e07">const</span> <span style="color:#dc322f">char</span><span style="color:#719e07">*</span> <span style="color:#719e07">const</span> <span style="color:#268bd2">get_hello_string</span>(<span style="color:#719e07">const</span> Language language) <span style="color:#719e07">noexcept</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// When the template argument is LanguageKey::LANG_HELLO...
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">get_hello_string</span>(<span style="color:#66d9ef">const</span> Language language) <span style="color:#66d9ef">noexcept</span>
 {
-    <span style="color:#719e07">return</span> (Language<span style="color:#719e07">:</span><span style="color:#719e07">:</span>ENGLISH <span style="color:#719e07">=</span><span style="color:#719e07">=</span> language) <span style="color:#719e07">?</span> STR_ENG_HELLO
-         : (Language<span style="color:#719e07">:</span><span style="color:#719e07">:</span>SPANISH <span style="color:#719e07">=</span><span style="color:#719e07">=</span> language) <span style="color:#719e07">?</span> STR_ESP_HELLO
-         : <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">NOT FOUND</span><span style="color:#2aa198">&#34;</span>;
+    <span style="color:#66d9ef">return</span> (Language<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ENGLISH <span style="color:#f92672">=</span><span style="color:#f92672">=</span> language) <span style="color:#f92672">?</span> STR_ENG_HELLO
+         : (Language<span style="color:#f92672">:</span><span style="color:#f92672">:</span>SPANISH <span style="color:#f92672">=</span><span style="color:#f92672">=</span> language) <span style="color:#f92672">?</span> STR_ESP_HELLO
+         : <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">NOT FOUND</span><span style="color:#e6db74">&#34;</span>;
 };
 
-<span style="color:#586e75">// When the template argument is LanguageKey::LANG_GOODBYE...
-</span><span style="color:#586e75"></span><span style="color:#719e07">const</span> <span style="color:#dc322f">char</span><span style="color:#719e07">*</span> <span style="color:#719e07">const</span> <span style="color:#268bd2">get_goodbye_string</span>(<span style="color:#719e07">const</span> Language language) <span style="color:#719e07">noexcept</span>
+<span style="color:#75715e">// When the template argument is LanguageKey::LANG_GOODBYE...
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">get_goodbye_string</span>(<span style="color:#66d9ef">const</span> Language language) <span style="color:#66d9ef">noexcept</span>
 {
-    <span style="color:#719e07">return</span> (Language<span style="color:#719e07">:</span><span style="color:#719e07">:</span>ENGLISH <span style="color:#719e07">=</span><span style="color:#719e07">=</span> language) <span style="color:#719e07">?</span> STR_ENG_GOODBYE
-         : (Language<span style="color:#719e07">:</span><span style="color:#719e07">:</span>SPANISH <span style="color:#719e07">=</span><span style="color:#719e07">=</span> language) <span style="color:#719e07">?</span> STR_ESP_GOODBYE
-         : <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">NOT FOUND</span><span style="color:#2aa198">&#34;</span>;
+    <span style="color:#66d9ef">return</span> (Language<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ENGLISH <span style="color:#f92672">=</span><span style="color:#f92672">=</span> language) <span style="color:#f92672">?</span> STR_ENG_GOODBYE
+         : (Language<span style="color:#f92672">:</span><span style="color:#f92672">:</span>SPANISH <span style="color:#f92672">=</span><span style="color:#f92672">=</span> language) <span style="color:#f92672">?</span> STR_ESP_GOODBYE
+         : <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">NOT FOUND</span><span style="color:#e6db74">&#34;</span>;
 };
 </code></pre></div><p>Most importantly, if you pass in a <code>LanguageKey</code> that does not exist in <em>every
 language list</em>, the build will fail. Suppose we add a key for the word &ldquo;love&rdquo;:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">using</span> EnglishStrings
-<span style="color:#719e07">=</span> type_list
-<span style="color:#719e07">&lt;</span>
-    LangPair<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_HELLO    , STR_ENG_HELLO<span style="color:#719e07">&gt;</span>,
-    LangPair<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_GOODBYE  , STR_ENG_GOODBYE<span style="color:#719e07">&gt;</span>,
-    LangPair<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_LOVE     , STR_ENG_LOVE<span style="color:#719e07">&gt;</span>
-<span style="color:#719e07">&gt;</span>;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">using</span> EnglishStrings
+<span style="color:#f92672">=</span> type_list
+<span style="color:#f92672">&lt;</span>
+    LangPair<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_HELLO    , STR_ENG_HELLO<span style="color:#f92672">&gt;</span>,
+    LangPair<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_GOODBYE  , STR_ENG_GOODBYE<span style="color:#f92672">&gt;</span>,
+    LangPair<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_LOVE     , STR_ENG_LOVE<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;</span>;
 
-<span style="color:#719e07">using</span> SpanishStrings
-<span style="color:#719e07">=</span> type_list
-<span style="color:#719e07">&lt;</span>
-    LangPair<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_GOODBYE  , STR_ESP_GOODBYE<span style="color:#719e07">&gt;</span>,
-    LangPair<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_HELLO    , STR_ESP_HELLO<span style="color:#719e07">&gt;</span>
-    <span style="color:#586e75">// TODO add &#34;amor...&#34;
-</span><span style="color:#586e75"></span><span style="color:#719e07">&gt;</span>;
+<span style="color:#66d9ef">using</span> SpanishStrings
+<span style="color:#f92672">=</span> type_list
+<span style="color:#f92672">&lt;</span>
+    LangPair<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_GOODBYE  , STR_ESP_GOODBYE<span style="color:#f92672">&gt;</span>,
+    LangPair<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_HELLO    , STR_ESP_HELLO<span style="color:#f92672">&gt;</span>
+    <span style="color:#75715e">// TODO add &#34;amor...&#34;
+</span><span style="color:#75715e"></span><span style="color:#f92672">&gt;</span>;
 
-<span style="color:#dc322f">int</span> <span style="color:#268bd2">main</span>(<span style="color:#dc322f">int</span> argc, <span style="color:#719e07">const</span> <span style="color:#dc322f">char</span> <span style="color:#719e07">*</span> argv[]) {
-    <span style="color:#586e75">// This doesn&#39;t compile!
-</span><span style="color:#586e75"></span>    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>cout <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> get_string<span style="color:#719e07">&lt;</span>LanguageKey<span style="color:#719e07">:</span><span style="color:#719e07">:</span>LANG_LOVE<span style="color:#719e07">&gt;</span>(...) <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>endl;
-    <span style="color:#719e07">return</span> <span style="color:#2aa198">0</span>;
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> argv[]) {
+    <span style="color:#75715e">// This doesn&#39;t compile!
+</span><span style="color:#75715e"></span>    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> get_string<span style="color:#f92672">&lt;</span>LanguageKey<span style="color:#f92672">:</span><span style="color:#f92672">:</span>LANG_LOVE<span style="color:#f92672">&gt;</span>(...) <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>endl;
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 }
 </code></pre></div><p>Because <code>SpanishStrings</code> doesn't have a pairing to <code>LANG_LOVE</code>, a developer who
 tries <code>get_string&lt;LanguageKey::LANG_LOVE&gt;(...)</code> will see a build

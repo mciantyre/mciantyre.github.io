@@ -17,8 +17,6 @@
 	<nav>
 		<ul>
 			
-			<li><a href="/">Home</a></li>
-			
 			<li><a href="/tags">Tags</a></li>
 			
 		</ul>
@@ -46,47 +44,47 @@
 <h2 id="wheres-the-value">Where's the value?</h2>
 <p>We will have to implement all of the memory management for our promise-future pair, which begs the question: what happens when we put a value in the promise? Who owns the data? How does it make its way to <code>our::future</code>?</p>
 <p>The standard library analogs have a &ldquo;shared state&rdquo; to hold the value set on the <code>promise</code> and received by the <code>future</code>. The standard library &ldquo;shared state&rdquo; is tuned for all sorts of use cases. But, for our own exploration, we will define a <code>our::shared_state</code> to simply hold an arbitrary value of type <code>T</code> and provide some memory-safe behavior:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">namespace</span> our
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">namespace</span> our
 {
-  <span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> T<span style="color:#719e07">&gt;</span>
-  <span style="color:#719e07">class</span> <span style="color:#268bd2">shared_state</span>
+  <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">shared_state</span>
   {
-    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>mutex m_mutex;
-    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>condition_variable m_cv;
-    <span style="color:#dc322f">bool</span> m_ready;
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mutex m_mutex;
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>condition_variable m_cv;
+    <span style="color:#66d9ef">bool</span> m_ready;
     T m_value;
-  <span style="color:#719e07">public</span><span style="color:#719e07">:</span>
-    <span style="color:#586e75">// Create a default state
-</span><span style="color:#586e75"></span>    shared_state()
-      <span style="color:#719e07">:</span> m_ready(<span style="color:#b58900">false</span>)
-      , m_value{} { <span style="color:#586e75">/* empty ctor body */</span> }
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#75715e">// Create a default state
+</span><span style="color:#75715e"></span>    shared_state()
+      <span style="color:#f92672">:</span> m_ready(false)
+      , m_value{} { <span style="color:#75715e">/* empty ctor body */</span> }
 
-    <span style="color:#586e75">// Set the value
-</span><span style="color:#586e75"></span>    <span style="color:#dc322f">void</span> <span style="color:#268bd2">set</span>(T<span style="color:#719e07">&amp;</span><span style="color:#719e07">&amp;</span> value)
+    <span style="color:#75715e">// Set the value
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">set</span>(T<span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> value)
     {
-      std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>lock_guard<span style="color:#719e07">&lt;</span>std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>mutex<span style="color:#719e07">&gt;</span> lock(m_mutex);
-      m_value <span style="color:#719e07">=</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>forward<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span>(value);
-      m_ready <span style="color:#719e07">=</span> <span style="color:#b58900">true</span>;
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>lock_guard<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mutex<span style="color:#f92672">&gt;</span> lock(m_mutex);
+      m_value <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>forward<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(value);
+      m_ready <span style="color:#f92672">=</span> true;
       m_cv.notify_all();
     }
 
-    <span style="color:#586e75">// Is the shared state ready?
-</span><span style="color:#586e75"></span>    <span style="color:#dc322f">bool</span> <span style="color:#268bd2">ready</span>()
+    <span style="color:#75715e">// Is the shared state ready?
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">ready</span>()
     {
-      std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>lock_guard<span style="color:#719e07">&lt;</span>std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>mutex<span style="color:#719e07">&gt;</span> lock(m_mutex);
-      <span style="color:#719e07">return</span> m_ready;
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>lock_guard<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mutex<span style="color:#f92672">&gt;</span> lock(m_mutex);
+      <span style="color:#66d9ef">return</span> m_ready;
     }
 
-    <span style="color:#586e75">// Wait if not ready, then take the value
-</span><span style="color:#586e75"></span>    T <span style="color:#268bd2">wait_and_take</span>()
+    <span style="color:#75715e">// Wait if not ready, then take the value
+</span><span style="color:#75715e"></span>    T <span style="color:#a6e22e">wait_and_take</span>()
     {
-      <span style="color:#719e07">if</span> (m_ready)
-        <span style="color:#719e07">return</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>move(m_value);
+      <span style="color:#66d9ef">if</span> (m_ready)
+        <span style="color:#66d9ef">return</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(m_value);
 
-      std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>unique_lock<span style="color:#719e07">&lt;</span>std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>mutex<span style="color:#719e07">&gt;</span> lock(m_mutex);
-      m_cv.wait(lock, [<span style="color:#719e07">this</span>]() <span style="color:#719e07">-</span><span style="color:#719e07">&gt;</span> <span style="color:#dc322f">bool</span> { <span style="color:#719e07">return</span> m_ready; });
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_lock<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mutex<span style="color:#f92672">&gt;</span> lock(m_mutex);
+      m_cv.wait(lock, [<span style="color:#66d9ef">this</span>]() <span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">bool</span> { <span style="color:#66d9ef">return</span> m_ready; });
 
-      <span style="color:#719e07">return</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>move(m_value);
+      <span style="color:#66d9ef">return</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(m_value);
     }
   };
 }
@@ -95,35 +93,35 @@
 <p>To perform a <code>wait_and_take</code>, we lock the mutex with a <code>unique_lock</code> and pass it into <code>conditional_variable::wait</code>. <code>wait</code> will unblock and re-acquire the lock when (1) the object is notified, and (2) <code>m_ready</code> is <code>true</code>. Once awoken, we can be sure we have a value, and we move it out of the state as the return of the function.</p>
 <h2 id="the-promise">The promise</h2>
 <p>Let's build <code>our::promise</code>. We will deviate from the design of the standard library with this one. We will say that a promise is created with a pointer to an <code>our::shared_state</code>. It will modify the shared state when setting a value, then it will remove its reference to the shared state:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">namespace</span> our
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">namespace</span> our
 {
-  <span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> T<span style="color:#719e07">&gt;</span>
-  <span style="color:#719e07">class</span> <span style="color:#268bd2">promise</span>
+  <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">promise</span>
   {
-    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_ptr<span style="color:#719e07">&lt;</span>our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_state<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&gt;</span> m_shared_state;
-  <span style="color:#719e07">public</span><span style="color:#719e07">:</span>
-    promise(std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_ptr<span style="color:#719e07">&lt;</span>our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_state<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&gt;</span> shared_state)
-      <span style="color:#719e07">:</span> m_shared_state(std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>move(shared_state))
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_state<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> m_shared_state;
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    promise(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_state<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> shared_state)
+      <span style="color:#f92672">:</span> m_shared_state(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(shared_state))
     {
-      <span style="color:#586e75">/* empty ctor body */</span>
+      <span style="color:#75715e">/* empty ctor body */</span>
     }
 
-    <span style="color:#586e75">// Our promise will not be copied
-</span><span style="color:#586e75"></span>    promise(<span style="color:#719e07">const</span> promise<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span>) <span style="color:#719e07">=</span> <span style="color:#719e07">delete</span>;
-    promise<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span> <span style="color:#719e07">operator</span><span style="color:#719e07">=</span>(<span style="color:#719e07">const</span> promise<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span>) <span style="color:#719e07">=</span> <span style="color:#719e07">delete</span>;
+    <span style="color:#75715e">// Our promise will not be copied
+</span><span style="color:#75715e"></span>    promise(<span style="color:#66d9ef">const</span> promise<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">delete</span>;
+    promise<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> promise<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">delete</span>;
 
-    <span style="color:#586e75">// Our promise may be moved
-</span><span style="color:#586e75"></span>    promise(promise<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span><span style="color:#719e07">&amp;</span>) <span style="color:#719e07">=</span> <span style="color:#719e07">default</span>;
-    promise<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span> <span style="color:#719e07">operator</span><span style="color:#719e07">=</span>(promise<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span><span style="color:#719e07">&amp;</span>) <span style="color:#719e07">=</span> <span style="color:#719e07">default</span>;
+    <span style="color:#75715e">// Our promise may be moved
+</span><span style="color:#75715e"></span>    promise(promise<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">default</span>;
+    promise<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(promise<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">default</span>;
 
-    <span style="color:#586e75">// Set the value in the promise
-</span><span style="color:#586e75"></span>    <span style="color:#dc322f">void</span> <span style="color:#268bd2">set</span>(T<span style="color:#719e07">&amp;</span><span style="color:#719e07">&amp;</span> value)
+    <span style="color:#75715e">// Set the value in the promise
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">set</span>(T<span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> value)
     {
-      <span style="color:#719e07">if</span> (m_shared_state)
+      <span style="color:#66d9ef">if</span> (m_shared_state)
       {
-        m_shared_state<span style="color:#719e07">-</span><span style="color:#719e07">&gt;</span>set(std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>forward<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span>(value));
-        <span style="color:#586e75">// Remove our reference to the shared state
-</span><span style="color:#586e75"></span>        m_shared_state <span style="color:#719e07">=</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_ptr<span style="color:#719e07">&lt;</span>our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_state<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&gt;</span>{};
+        m_shared_state<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>set(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>forward<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(value));
+        <span style="color:#75715e">// Remove our reference to the shared state
+</span><span style="color:#75715e"></span>        m_shared_state <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_state<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span>{};
       }
     }
   };
@@ -133,46 +131,46 @@
 <p>The final action of <code>set</code> resets our <code>shared_ptr</code> to <code>nullptr</code>. Since we null-check our shared state for every <code>set</code>, the design guarantees that we can only set the value on the shared-state once. Subsequent invocations to <code>set</code> will do nothing.</p>
 <h2 id="the-future">The future</h2>
 <p>Finally, we code our future. Similar to <code>our::promise</code>, <code>our::future</code> will be constructed with a pointer to a shared state:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">namespace</span> our
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">namespace</span> our
 {
-  <span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> T<span style="color:#719e07">&gt;</span>
-  <span style="color:#719e07">class</span> <span style="color:#268bd2">future</span>
+  <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">future</span>
   {
-    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_ptr<span style="color:#719e07">&lt;</span>our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_state<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&gt;</span> m_shared_state;
-  <span style="color:#719e07">public</span><span style="color:#719e07">:</span>
-    future(std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_ptr<span style="color:#719e07">&lt;</span>our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_state<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&gt;</span> shared_state)
-      <span style="color:#719e07">:</span> m_shared_state(std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>move(shared_state))
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_state<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> m_shared_state;
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    future(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_state<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> shared_state)
+      <span style="color:#f92672">:</span> m_shared_state(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(shared_state))
     {
-      <span style="color:#586e75">/* empty ctor body */</span>
+      <span style="color:#75715e">/* empty ctor body */</span>
     }
 
-    <span style="color:#586e75">// Our future will not be copied
-</span><span style="color:#586e75"></span>    future(<span style="color:#719e07">const</span> future<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span>) <span style="color:#719e07">=</span> <span style="color:#719e07">delete</span>;
-    future<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span> <span style="color:#719e07">operator</span><span style="color:#719e07">=</span>(<span style="color:#719e07">const</span> future<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span>) <span style="color:#719e07">=</span> <span style="color:#719e07">delete</span>;
+    <span style="color:#75715e">// Our future will not be copied
+</span><span style="color:#75715e"></span>    future(<span style="color:#66d9ef">const</span> future<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">delete</span>;
+    future<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> future<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">delete</span>;
     
-    <span style="color:#586e75">// Our future may be moved
-</span><span style="color:#586e75"></span>    future(future<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span><span style="color:#719e07">&amp;</span>) <span style="color:#719e07">=</span> <span style="color:#719e07">default</span>;
-    future<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span> <span style="color:#719e07">operator</span><span style="color:#719e07">=</span>(future<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&amp;</span><span style="color:#719e07">&amp;</span>) <span style="color:#719e07">=</span> <span style="color:#719e07">default</span>;
+    <span style="color:#75715e">// Our future may be moved
+</span><span style="color:#75715e"></span>    future(future<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">default</span>;
+    future<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(future<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span>) <span style="color:#f92672">=</span> <span style="color:#66d9ef">default</span>;
     
-    <span style="color:#586e75">// See if the future is valid
-</span><span style="color:#586e75"></span>    <span style="color:#dc322f">bool</span> <span style="color:#268bd2">valid</span>() <span style="color:#719e07">const</span>
+    <span style="color:#75715e">// See if the future is valid
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">valid</span>() <span style="color:#66d9ef">const</span>
     {
-      <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>m_shared_state)
-        <span style="color:#719e07">return</span> <span style="color:#b58900">false</span>; 
+      <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>m_shared_state)
+        <span style="color:#66d9ef">return</span> false; 
       
-      <span style="color:#719e07">return</span> m_shared_state<span style="color:#719e07">-</span><span style="color:#719e07">&gt;</span>ready();
+      <span style="color:#66d9ef">return</span> m_shared_state<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>ready();
     }
 
-    <span style="color:#586e75">// Get the value
-</span><span style="color:#586e75"></span>    T <span style="color:#268bd2">get</span>()
+    <span style="color:#75715e">// Get the value
+</span><span style="color:#75715e"></span>    T <span style="color:#a6e22e">get</span>()
     {
-      <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>m_shared_state)
-        <span style="color:#719e07">throw</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>logic_error(<span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">Value already gotten!</span><span style="color:#2aa198">&#34;</span>);
+      <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>m_shared_state)
+        <span style="color:#66d9ef">throw</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>logic_error(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Value already gotten!</span><span style="color:#e6db74">&#34;</span>);
 
-      T value <span style="color:#719e07">=</span> m_shared_state<span style="color:#719e07">-</span><span style="color:#719e07">&gt;</span>wait_and_take();
-      <span style="color:#586e75">// Remove our reference to the shared state
-</span><span style="color:#586e75"></span>      m_shared_state <span style="color:#719e07">=</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_ptr<span style="color:#719e07">&lt;</span>our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_state<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&gt;</span>{};
-      <span style="color:#719e07">return</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>move(value);
+      T value <span style="color:#f92672">=</span> m_shared_state<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>wait_and_take();
+      <span style="color:#75715e">// Remove our reference to the shared state
+</span><span style="color:#75715e"></span>      m_shared_state <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_state<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span>{};
+      <span style="color:#66d9ef">return</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(value);
     }
   };
 }
@@ -180,53 +178,53 @@
 <p>As we did with the promise, we reset our <code>shared_state</code> to <code>nullptr</code> after we obtain the value. Subsequent invocations of <code>get</code> will throw an exception. The behavior is consistent with <code>std::future</code>.</p>
 <h2 id="making-promise-future-pairs">Making promise-future pairs</h2>
 <p>To ensure a one-to-one pairing of promises to futures, we enforce construction of both with a <code>make_promise_future</code> function. The function returns an <code>std::tuple</code> that has the promise in the 0th position, and the futures in the 1st position:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#586e75">// These convenient compile-time constants index the promise-future
-</span><span style="color:#586e75"></span><span style="color:#586e75">// when used with std::get...
-</span><span style="color:#586e75"></span><span style="color:#719e07">constexpr</span> size_t the_promise <span style="color:#719e07">=</span> <span style="color:#2aa198">0</span>;
-<span style="color:#719e07">constexpr</span> size_t the_future <span style="color:#719e07">=</span> <span style="color:#2aa198">1</span>;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// These convenient compile-time constants index the promise-future
+</span><span style="color:#75715e"></span><span style="color:#75715e">// when used with std::get...
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">constexpr</span> size_t the_promise <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+<span style="color:#66d9ef">constexpr</span> size_t the_future <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
 
-<span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> T<span style="color:#719e07">&gt;</span>
-std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>tuple<span style="color:#719e07">&lt;</span>our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>promise<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span>, our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>future<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&gt;</span> make_promise_future()
+<span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> T<span style="color:#f92672">&gt;</span>
+std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tuple<span style="color:#f92672">&lt;</span>our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>promise<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>, our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>future<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> make_promise_future()
 {
-  std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_ptr<span style="color:#719e07">&lt;</span>our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_state<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span><span style="color:#719e07">&gt;</span> shared_state(<span style="color:#719e07">new</span> our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>shared_state<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span>);
-  <span style="color:#719e07">return</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>make_tuple(our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>promise<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span>(shared_state), our<span style="color:#719e07">:</span><span style="color:#719e07">:</span>future<span style="color:#719e07">&lt;</span>T<span style="color:#719e07">&gt;</span>(shared_state));
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_state<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> shared_state(<span style="color:#66d9ef">new</span> our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_state<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>);
+  <span style="color:#66d9ef">return</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_tuple(our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>promise<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(shared_state), our<span style="color:#f92672">:</span><span style="color:#f92672">:</span>future<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(shared_state));
 } 
 </code></pre></div><p>This part of the API is inconsistent with the standard-library components. In the standard library, a future is derived from a promise. It ends up being a cleaner API than what we're implementing. Nevertheless, both designs guarantee that the promise and future share the same state.</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#586e75">// Standard library API
-</span><span style="color:#586e75"></span>std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>promise<span style="color:#719e07">&lt;</span><span style="color:#dc322f">int</span><span style="color:#719e07">&gt;</span> promise;
-<span style="color:#586e75">// A future derived from its promise
-</span><span style="color:#586e75"></span>std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>future<span style="color:#719e07">&lt;</span><span style="color:#dc322f">int</span><span style="color:#719e07">&gt;</span> future <span style="color:#719e07">=</span> promise.get_future();
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// Standard library API
+</span><span style="color:#75715e"></span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>promise<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> promise;
+<span style="color:#75715e">// A future derived from its promise
+</span><span style="color:#75715e"></span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>future<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> future <span style="color:#f92672">=</span> promise.get_future();
 </code></pre></div><p>After creating a promise-future pair with <code>make_promise_future()</code>, we can use the methods of <code>std::tuple</code> to take the promise and future, and move them about how we see fit.</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#dc322f">int</span> <span style="color:#268bd2">main</span>()
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
 {
 
-  <span style="color:#586e75">// Make a promise-future pair that accept / return ints
-</span><span style="color:#586e75"></span>  <span style="color:#719e07">auto</span> pair <span style="color:#719e07">=</span> make_promise_future<span style="color:#719e07">&lt;</span><span style="color:#dc322f">int</span><span style="color:#719e07">&gt;</span>();
+  <span style="color:#75715e">// Make a promise-future pair that accept / return ints
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> pair <span style="color:#f92672">=</span> make_promise_future<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>();
 
-  <span style="color:#586e75">// Move the promise and future from the tuple...
-</span><span style="color:#586e75"></span>  <span style="color:#586e75">// the_promise == 0
-</span><span style="color:#586e75"></span>  <span style="color:#719e07">auto</span> promise <span style="color:#719e07">=</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>move(std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>get<span style="color:#719e07">&lt;</span>the_promise<span style="color:#719e07">&gt;</span>(pair));
-  <span style="color:#586e75">// the_future == 1
-</span><span style="color:#586e75"></span>  <span style="color:#719e07">auto</span> future <span style="color:#719e07">=</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>move(std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>get<span style="color:#719e07">&lt;</span>the_future<span style="color:#719e07">&gt;</span>(pair));
+  <span style="color:#75715e">// Move the promise and future from the tuple...
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// the_promise == 0
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> promise <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get<span style="color:#f92672">&lt;</span>the_promise<span style="color:#f92672">&gt;</span>(pair));
+  <span style="color:#75715e">// the_future == 1
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> future <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get<span style="color:#f92672">&lt;</span>the_future<span style="color:#f92672">&gt;</span>(pair));
 
-  <span style="color:#586e75">// Create a thread, and wait on the future
-</span><span style="color:#586e75"></span>  <span style="color:#719e07">auto</span> waiting_thread <span style="color:#719e07">=</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span><span style="color:#268bd2">thread</span>([<span style="color:#719e07">&amp;</span>future]()
+  <span style="color:#75715e">// Create a thread, and wait on the future
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> waiting_thread <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span><span style="color:#66d9ef">thread</span>([<span style="color:#f92672">&amp;</span>future]()
   {
-    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>cout <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">Waiting on future...</span><span style="color:#cb4b16">\n</span><span style="color:#2aa198">&#34;</span>;
-    <span style="color:#719e07">auto</span> value <span style="color:#719e07">=</span> future.get();
-    <span style="color:#586e75">// Prints 42 after 1 second
-</span><span style="color:#586e75"></span>    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>cout <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">The future returned </span><span style="color:#2aa198">&#34;</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> value <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>endl;
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Waiting on future...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+    <span style="color:#66d9ef">auto</span> value <span style="color:#f92672">=</span> future.get();
+    <span style="color:#75715e">// Prints 42 after 1 second
+</span><span style="color:#75715e"></span>    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">The future returned </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> value <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>endl;
   });
 
-  std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>cout <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">Setting promise in one second...</span><span style="color:#cb4b16">\n</span><span style="color:#2aa198">&#34;</span>;
-  std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>this_thread<span style="color:#719e07">:</span><span style="color:#719e07">:</span>sleep_for(std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>chrono<span style="color:#719e07">:</span><span style="color:#719e07">:</span>seconds(<span style="color:#2aa198">1</span>));
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Setting promise in one second...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>this_thread<span style="color:#f92672">:</span><span style="color:#f92672">:</span>sleep_for(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>chrono<span style="color:#f92672">:</span><span style="color:#f92672">:</span>seconds(<span style="color:#ae81ff">1</span>));
 
-  promise.set(<span style="color:#2aa198">42</span>);
-  std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>cout <span style="color:#719e07">&lt;</span><span style="color:#719e07">&lt;</span> <span style="color:#2aa198"></span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">Set promise</span><span style="color:#cb4b16">\n</span><span style="color:#2aa198">&#34;</span>;
+  promise.set(<span style="color:#ae81ff">42</span>);
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Set promise</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
 
   waiting_thread.join();
 
-  <span style="color:#719e07">return</span> <span style="color:#2aa198">0</span>;
+  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 }
 
 </code></pre></div><h2 id="comparisons-to-stdpromise-and-stdfuture">Comparisons to <code>std::promise</code> and <code>std::future</code></h2>

@@ -17,8 +17,6 @@
 	<nav>
 		<ul>
 			
-			<li><a href="/">Home</a></li>
-			
 			<li><a href="/tags">Tags</a></li>
 			
 		</ul>
@@ -41,23 +39,23 @@
 <h3 id="connmanctl">connmanctl</h3>
 <p><code>connmanctl</code> is a pre-installed command line tool for managing network connections. The utility seamlessly connected the Blue to my WiFi network.</p>
 <p>From the shell, enter</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">debian@beaglebone:~$ connmanctl</code></pre></div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">debian@beaglebone:~$ connmanctl</code></pre></div>
 <p>to start the utility. Notice a change in the shell prompt. Enter <code>help</code> to see a list of all commands. <code>quit</code> and <code>exit</code> stop the utility, saving configurations.</p>
 <p>Scan for wifi networks, then list services:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connmanctl&gt; scan wifi
-<span style="color:#586e75"># Wait for this to complete...</span>
-Scan completed <span style="color:#719e07">for</span> wifi
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connmanctl&gt; scan wifi
+<span style="color:#75715e"># Wait for this to complete...</span>
+Scan completed <span style="color:#66d9ef">for</span> wifi
 connmanctl&gt; services
 
-<span style="color:#586e75"># Other SSIDs...</span>
+<span style="color:#75715e"># Other SSIDs...</span>
 YOUR_SSID_NAME  wifi_abc123_lotsofchars_somemanagementqualification
-<span style="color:#586e75"># ...</span></code></pre></div>
+<span style="color:#75715e"># ...</span></code></pre></div>
 <p>Enable the wireless agent for entering and accepting passphrases:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connmanctl&gt; agent on
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connmanctl&gt; agent on
 Agent registered</code></pre></div>
 <p>Finally, connect to your network using the <code>wifi_abc123_blahblahblah</code> value:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connmanctl&gt; connect wifi_abc123_lotsofchars_somemanagementqualification
-<span style="color:#586e75"># Enter password, if prompted</span></code></pre></div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connmanctl&gt; connect wifi_abc123_lotsofchars_somemanagementqualification
+<span style="color:#75715e"># Enter password, if prompted</span></code></pre></div>
 <p>By this point, a very green light shines from the Blue. Exit <code>connmanctl</code> with <code>quit</code> or <code>exit</code>. Check out the <code>wlan0</code> field of <code>ifconfig</code> to see your IP. Finally, try a ping or a <code>sudo apt-get update</code>!</p>
 <p>The Blue auto-connects to known networks after startup, so there will be no need to re-connect. Consider the &ldquo;autoconnect&rdquo; configuration if there is a need to change this behavior.</p>
 <h3 id="future-todos">Future TODOs:</h3>

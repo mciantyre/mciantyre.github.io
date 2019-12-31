@@ -17,8 +17,6 @@
 	<nav>
 		<ul>
 			
-			<li><a href="/">Home</a></li>
-			
 			<li><a href="/tags">Tags</a></li>
 			
 		</ul>
@@ -35,63 +33,63 @@
 				<p><a href="/post/2017-09-24-cpp-singletons/">In a previous post</a>, we talked about units that use dependency injection to indirectly access singletons, as opposed to units that directly call on global singletons. In our design, a singleton implements an interface, and units accept a reference to the interface type. The design is easier to test, maintain, and refactor.</p>
 <p>In this brief follow-up, we'll explore an alternative approach that applies specifically to C++: templates and &ldquo;policy-based design.&rdquo; Policy-based design comes from Alexandrescu's <em>Modern C++ Design</em> (2001). It is an approach of designing (families of) classes to one or more &ldquo;policies,&rdquo; or sets of behaviors. Policies are implemented as templates with static or non-virtual instance methods. In our context, we will design a function, rather than classes, to a &ldquo;logging policy.&rdquo;</p>
 <p>As a quick refresher, we ended up with a design that resembles</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#dc322f">int</span> MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span> x, ILogging<span style="color:#719e07">&amp;</span> logging)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> MyThing<span style="color:#f92672">:</span><span style="color:#f92672">:</span>DoSomething(<span style="color:#66d9ef">int</span> x, ILogging<span style="color:#f92672">&amp;</span> logging)
 {
-  m_value <span style="color:#719e07">+</span><span style="color:#719e07">=</span> x;
+  m_value <span style="color:#f92672">+</span><span style="color:#f92672">=</span> x;
 
-  <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>logging.Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, m_value))
-    <span style="color:#719e07">return</span> <span style="color:#719e07">-</span><span style="color:#2aa198">1</span>
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>logging.Log(LogMsg<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Result, m_value))
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
 
-  <span style="color:#719e07">return</span> m_value;
+  <span style="color:#66d9ef">return</span> m_value;
 }
 </code></pre></div><p>Since the method <code>DoSomething</code> needs to interact with logging, it accepts a reference to an <code>ILogging</code> interface. In production, the <code>Logging</code> singleton is passed-into the method. In unit testing, we provide a mocked collaborator in order to assert behavior in a repeatable manner.</p>
 <p>The <code>ILogging</code> interface is simple:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">enum</span> <span style="color:#719e07">class</span> <span style="color:#268bd2">LogMsg</span>;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">enum</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LogMsg</span>;
 
-<span style="color:#719e07">class</span> <span style="color:#268bd2">ILogging</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ILogging</span>
 {
-<span style="color:#719e07">public</span><span style="color:#719e07">:</span>
-    <span style="color:#719e07">virtual</span> <span style="color:#719e07">~</span>ILogging() { <span style="color:#586e75">/* empty */</span> }
-    <span style="color:#719e07">virtual</span> <span style="color:#dc322f">bool</span> <span style="color:#268bd2">Log</span>(LogMsg, <span style="color:#dc322f">int</span>) <span style="color:#719e07">=</span> <span style="color:#2aa198">0</span>;
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>ILogging() { <span style="color:#75715e">/* empty */</span> }
+    <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">Log</span>(LogMsg, <span style="color:#66d9ef">int</span>) <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
 };
 </code></pre></div><p>Let's consider a redesign of our <code>Logging</code> singleton. Rather than implementing a singleton pattern that ensures the &ldquo;only one&rdquo; behavior, let's consider implementing our <code>Logging</code> singleton as a class with <em>only</em> static functions and members. It ends up that the <code>Logging</code> class with static-only functions looks a lot like the <code>ILogging</code> interface!</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">class</span> <span style="color:#268bd2">Logging</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Logging</span>
 {
-<span style="color:#719e07">public</span><span style="color:#719e07">:</span>
-    <span style="color:#719e07">static</span> <span style="color:#dc322f">bool</span> Log(LogMsg, <span style="color:#dc322f">int</span>);
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">bool</span> Log(LogMsg, <span style="color:#66d9ef">int</span>);
 
-<span style="color:#719e07">private</span><span style="color:#719e07">:</span>
-    Logging() <span style="color:#719e07">=</span> <span style="color:#719e07">default</span>;
-    <span style="color:#719e07">static</span> Logging sm_Instance;
-    <span style="color:#586e75">// ...
-</span><span style="color:#586e75"></span>};
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    Logging() <span style="color:#f92672">=</span> <span style="color:#66d9ef">default</span>;
+    <span style="color:#66d9ef">static</span> Logging sm_Instance;
+    <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>};
 </code></pre></div><p>As before with the singleton, there is only one static-only <code>Logging</code> class in memory. The naive use of static-only <code>Logging</code> would resemble the use of the singleton:</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#dc322f">int</span> MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span> x)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> MyThing<span style="color:#f92672">:</span><span style="color:#f92672">:</span>DoSomething(<span style="color:#66d9ef">int</span> x)
 {
-  m_value <span style="color:#719e07">+</span><span style="color:#719e07">=</span> x;
+  m_value <span style="color:#f92672">+</span><span style="color:#f92672">=</span> x;
 
-  <span style="color:#586e75">// :( v-- again, sadness
-</span><span style="color:#586e75"></span>  <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, m_value))
-    <span style="color:#719e07">return</span> <span style="color:#719e07">-</span><span style="color:#2aa198">1</span>
+  <span style="color:#75715e">// :( v-- again, sadness
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Logging<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Log(LogMsg<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Result, m_value))
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
 
-  <span style="color:#719e07">return</span> m_value;
+  <span style="color:#66d9ef">return</span> m_value;
 }
 </code></pre></div><p>But, if <code>DoSomething</code> could accept a &ldquo;logging policy,&rdquo; it would very closely resemble the solution we made when designing to a run-time interface. We can achieve the analogous design if <code>DoSomething</code> accepted a template argument <code>TLogging</code>, short for &ldquo;logging type&rdquo;.</p>
-<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> TLogging<span style="color:#719e07">&gt;</span>
-<span style="color:#dc322f">int</span> MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span> x)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">typename</span> TLogging<span style="color:#f92672">&gt;</span>
+<span style="color:#66d9ef">int</span> MyThing<span style="color:#f92672">:</span><span style="color:#f92672">:</span>DoSomething(<span style="color:#66d9ef">int</span> x)
 {
-  m_value <span style="color:#719e07">+</span><span style="color:#719e07">=</span> x;
+  m_value <span style="color:#f92672">+</span><span style="color:#f92672">=</span> x;
 
-  <span style="color:#586e75">// Invoke a static method Log on type &#34;TLogging&#34;
-</span><span style="color:#586e75"></span>  <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>TLogging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, m_value))
-    <span style="color:#719e07">return</span> <span style="color:#719e07">-</span><span style="color:#2aa198">1</span>
+  <span style="color:#75715e">// Invoke a static method Log on type &#34;TLogging&#34;
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TLogging<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Log(LogMsg<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Result, m_value))
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
 
-  <span style="color:#719e07">return</span> m_value;
+  <span style="color:#66d9ef">return</span> m_value;
 }
 
-<span style="color:#586e75">// Usage...
-</span><span style="color:#586e75"></span>MyThing thing;
-<span style="color:#dc322f">int</span> result <span style="color:#719e07">=</span> thing.DoSomething<span style="color:#719e07">&lt;</span>Logging<span style="color:#719e07">&gt;</span>(<span style="color:#2aa198">42</span>);
+<span style="color:#75715e">// Usage...
+</span><span style="color:#75715e"></span>MyThing thing;
+<span style="color:#66d9ef">int</span> result <span style="color:#f92672">=</span> thing.DoSomething<span style="color:#f92672">&lt;</span>Logging<span style="color:#f92672">&gt;</span>(<span style="color:#ae81ff">42</span>);
 </code></pre></div><p>Take a look at the templated <code>DoSomething</code> implementation. It invokes a static method <code>Log</code> on <code>TLogging</code>. Therefore, any type we provide as a template argument <em>must implement a static method <code>Log</code> with the same signature</em>. Since our <code>Logging</code> module has a static method <code>Log</code> with the required signature, this program is valid, and we successfully compile. If we instead passed in an <code>int</code> as the template argument to <code>DoSomething</code>, the program would fail to compile, since the type <code>int</code> does not have a static <code>Log</code> method. In essence, the compile-time behavior is exactly the same as when we designed to a run-time interface.</p>
 <h2 id="remarks">Remarks</h2>
 <p>If you like header-only C++ projects, or if virtual methods and run-time interfaces are not your forte, the policy design may work for you. The approach ends up eliminating singletons, opting for static memory allocation. Your application may need more control over when and how singletons are allocated; if so, template-based design as we've described may not satisfy your needs.</p>
