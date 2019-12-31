@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>embedded on mciantyre</title>
+    <link>http://mciantyre.github.io/tags/embedded/</link>
+    <description>Recent content in embedded on mciantyre</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 16 Mar 2018 09:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://mciantyre.github.io/tags/embedded/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Safer configuration and exception masks in C&#43;&#43;</title>
+      <link>http://mciantyre.github.io/post/2018-03-16-cpp-strong-exception-masks/</link>
+      <pubDate>Fri, 16 Mar 2018 09:00:00 +0000</pubDate>
+      
+      <guid>http://mciantyre.github.io/post/2018-03-16-cpp-strong-exception-masks/</guid>
+      <description>In embedded C software, it&#39;s typical to see configurations and exceptions represented as bitmasks. The approach allows us to configure ON/OFF setting in a space-efficient manner. We work with the masks using bitwise AND and OR, checking and setting bits as required.
+#define	SPI_MODE_CKPOL_HIGH (1 &amp;lt;&amp;lt; 8)#define	SPI_MODE_CKPHASE_HALF (1 &amp;lt;&amp;lt; 9)#define	SPI_MODE_BODER_MSB (1 &amp;lt;&amp;lt; 10)#define	SPI_MODE_CSPOL_HIGH (1 &amp;lt;&amp;lt; 11)#define	SPI_MODE_CSSTAT_HIGH (1 &amp;lt;&amp;lt; 12)#define	SPI_MODE_CSHOLD_HIGH (1 &amp;lt;&amp;lt; 13) typedef spi_cfg unsigned int; int spi_cfg(int fd, int dev, spi_cfg cfg); Above: real-life SPI configuration bits indended for setting device settings.</description>
+    </item>
+    
+    <item>
+      <title>Connecting the BeagleBone Blue to WiFi</title>
+      <link>http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/</link>
+      <pubDate>Tue, 21 Mar 2017 20:10:22 +0000</pubDate>
+      
+      <guid>http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/</guid>
+      <description>A BeagleBone Blue arrived in my mail today. My first task: connect it to a wireless network.
+Unlike other models in the BeagleBoard family, including the popular BeagleBone Black, the Blue has no ethernet port. The Blue is all wireless with WiFi and Bluetooth 4.1 and LE. Also unlike the Black, the Blue does not have a graphical interface. Therefore, we rely on command line tools to configure wireless networking.</description>
+    </item>
+    
+  </channel>
+</rss>

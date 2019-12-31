@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>http://mciantyre.github.io/tags/c&#43;&#43;/</loc>
+    <lastmod>2018-03-16T09:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/tags/embedded/</loc>
+    <lastmod>2018-03-16T09:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/</loc>
+    <lastmod>2018-03-16T09:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/post/</loc>
+    <lastmod>2018-03-16T09:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/post/2018-03-16-cpp-strong-exception-masks/</loc>
+    <lastmod>2018-03-16T09:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/tags/</loc>
+    <lastmod>2018-03-16T09:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/post/2018-03-04-devops-foosball-cicd/</loc>
+    <lastmod>2018-03-04T11:45:22+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/post/2017-09-29-singleton-policy/</loc>
+    <lastmod>2017-09-29T09:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/post/2017-09-24-cpp-singletons/</loc>
+    <lastmod>2017-09-24T21:23:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/post/2017-09-20-cpp-promises-futures/</loc>
+    <lastmod>2017-09-20T19:27:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/post/2017-09-17-cpp-compile-lang-lookup/</loc>
+    <lastmod>2017-09-17T18:29:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/</loc>
+    <lastmod>2017-03-21T20:10:22+00:00</lastmod>
+  </url>
+  
+</urlset>

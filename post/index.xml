@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on mciantyre</title>
+    <link>http://mciantyre.github.io/post/</link>
+    <description>Recent content in Posts on mciantyre</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 16 Mar 2018 09:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://mciantyre.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Safer configuration and exception masks in C&#43;&#43;</title>
+      <link>http://mciantyre.github.io/post/2018-03-16-cpp-strong-exception-masks/</link>
+      <pubDate>Fri, 16 Mar 2018 09:00:00 +0000</pubDate>
+      
+      <guid>http://mciantyre.github.io/post/2018-03-16-cpp-strong-exception-masks/</guid>
+      <description>In embedded C software, it&#39;s typical to see configurations and exceptions represented as bitmasks. The approach allows us to configure ON/OFF setting in a space-efficient manner. We work with the masks using bitwise AND and OR, checking and setting bits as required.
+#define	SPI_MODE_CKPOL_HIGH (1 &amp;lt;&amp;lt; 8)#define	SPI_MODE_CKPHASE_HALF (1 &amp;lt;&amp;lt; 9)#define	SPI_MODE_BODER_MSB (1 &amp;lt;&amp;lt; 10)#define	SPI_MODE_CSPOL_HIGH (1 &amp;lt;&amp;lt; 11)#define	SPI_MODE_CSSTAT_HIGH (1 &amp;lt;&amp;lt; 12)#define	SPI_MODE_CSHOLD_HIGH (1 &amp;lt;&amp;lt; 13) typedef spi_cfg unsigned int; int spi_cfg(int fd, int dev, spi_cfg cfg); Above: real-life SPI configuration bits indended for setting device settings.</description>
+    </item>
+    
+    <item>
+      <title>Devops for foosball: CI and CD</title>
+      <link>http://mciantyre.github.io/post/2018-03-04-devops-foosball-cicd/</link>
+      <pubDate>Sun, 04 Mar 2018 11:45:22 +0000</pubDate>
+      
+      <guid>http://mciantyre.github.io/post/2018-03-04-devops-foosball-cicd/</guid>
+      <description>There are tons of devops tools at our disposal, including tools for automating server configuration, testing software builds, and deploying whole applications and systems. But, do you know when to use what tool, and what problems each devops tool tries to solve?
+In this series of posts, I will touch on the issues we face when developing software in an Agile environment, and I identify a devops solution to address that issue.</description>
+    </item>
+    
+    <item>
+      <title>On the singleton pattern in C&#43;&#43;: Policy-based design</title>
+      <link>http://mciantyre.github.io/post/2017-09-29-singleton-policy/</link>
+      <pubDate>Fri, 29 Sep 2017 09:00:00 +0000</pubDate>
+      
+      <guid>http://mciantyre.github.io/post/2017-09-29-singleton-policy/</guid>
+      <description>In a previous post, we talked about units that use dependency injection to indirectly access singletons, as opposed to units that directly call on global singletons. In our design, a singleton implements an interface, and units accept a reference to the interface type. The design is easier to test, maintain, and refactor.
+In this brief follow-up, we&#39;ll explore an alternative approach that applies specifically to C++: templates and &amp;ldquo;policy-based design.&amp;rdquo; Policy-based design comes from Alexandrescu&#39;s Modern C++ Design (2001).</description>
+    </item>
+    
+    <item>
+      <title>On the singleton pattern in C&#43;&#43;</title>
+      <link>http://mciantyre.github.io/post/2017-09-24-cpp-singletons/</link>
+      <pubDate>Sun, 24 Sep 2017 21:23:00 +0000</pubDate>
+      
+      <guid>http://mciantyre.github.io/post/2017-09-24-cpp-singletons/</guid>
+      <description>The singleton pattern controls the creation and access of data. It is a popular design pattern that I&#39;ve used and seen used in a variety of software designs. However, I cringe when I see a singleton being accessed willy-nilly, just as one would access mutable, global state.
+int MyThing::DoSomething(int x) { m_value += x; // :( v-- sadness  if (!Logging::Instance().Log(LogMsg::Result, m_value)) return -1 return m_value; } How do I test this?</description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43; promises and futures</title>
+      <link>http://mciantyre.github.io/post/2017-09-20-cpp-promises-futures/</link>
+      <pubDate>Wed, 20 Sep 2017 19:27:00 +0000</pubDate>
+      
+      <guid>http://mciantyre.github.io/post/2017-09-20-cpp-promises-futures/</guid>
+      <description>The C++11 standard introduced std::promise and std::future as a mechanism for concurrent programming. The promise-future pattern is similar to what you find in JavaScript: a &amp;ldquo;promise&amp;rdquo; denotes the fulfillment of a computation, and the &amp;ldquo;future&amp;rdquo; defines means of accessing the computation&#39;s result. The pair can be used for memory-safe communication across threads and for defining asynchronous tasks.
+Let&#39;s explore std::promise and std::future, as well as some modern C++ concepts and standard library components, by creating a basic promise-future paring.</description>
+    </item>
+    
+    <item>
+      <title>Safe language string selection in C&#43;&#43;11</title>
+      <link>http://mciantyre.github.io/post/2017-09-17-cpp-compile-lang-lookup/</link>
+      <pubDate>Sun, 17 Sep 2017 18:29:00 +0000</pubDate>
+      
+      <guid>http://mciantyre.github.io/post/2017-09-17-cpp-compile-lang-lookup/</guid>
+      <description>I&#39;m working on a legacy C codebase for an embedded system. The devices is sold in different countries and has to support different languages. Although we can set a default language at build time, the end-user is able to change the language by navigating through a few graphical menus. She&#39;ll see all the strings update immediately on the user interface.
+As might be expected when dealing with legacy code, my teammates and I ran into issues when adding language strings to the codebase.</description>
+    </item>
+    
+    <item>
+      <title>Connecting the BeagleBone Blue to WiFi</title>
+      <link>http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/</link>
+      <pubDate>Tue, 21 Mar 2017 20:10:22 +0000</pubDate>
+      
+      <guid>http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/</guid>
+      <description>A BeagleBone Blue arrived in my mail today. My first task: connect it to a wireless network.
+Unlike other models in the BeagleBoard family, including the popular BeagleBone Black, the Blue has no ethernet port. The Blue is all wireless with WiFi and Bluetooth 4.1 and LE. Also unlike the Black, the Blue does not have a graphical interface. Therefore, we rely on command line tools to configure wireless networking.</description>
+    </item>
+    
+  </channel>
+</rss>

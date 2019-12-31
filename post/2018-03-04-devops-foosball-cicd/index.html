@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Devops for foosball: CI and CD - mciantyre</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="Devops for foosball: CI and CD" />
+<meta property="og:description" content="There are tons of devops tools at our disposal, including tools for automating server configuration, testing software builds, and deploying whole applications and systems. But, do you know when to use what tool, and what problems each devops tool tries to solve?
+In this series of posts, I will touch on the issues we face when developing software in an Agile environment, and I identify a devops solution to address that issue." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://mciantyre.github.io/post/2018-03-04-devops-foosball-cicd/" />
+<meta property="article:published_time" content="2018-03-04T11:45:22+00:00" />
+<meta property="article:modified_time" content="2018-03-04T11:45:22+00:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Devops for foosball: CI and CD"/>
+<meta name="twitter:description" content="There are tons of devops tools at our disposal, including tools for automating server configuration, testing software builds, and deploying whole applications and systems. But, do you know when to use what tool, and what problems each devops tool tries to solve?
+In this series of posts, I will touch on the issues we face when developing software in an Agile environment, and I identify a devops solution to address that issue."/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/main.css" /><link rel="stylesheet" type="text/css" href="http://mciantyre.github.io/css/dark.css"  />
+
+	<script src="http://mciantyre.github.io/js/feather.min.js"></script>
+	
+	<script src="http://mciantyre.github.io/js/main.js"></script>
+</head>
+
+<body>
+	<div class="container wrapper post">
+		<div class="header">
+	<h1 class="site-title"><a href="http://mciantyre.github.io/">mciantyre</a></h1>
+	<div class="site-description"><h2>Technical blog and ramblings</h2><nav class="nav social">
+			<ul class="flat"><a href="https://github.com/mciantyre" title="Github"><i data-feather="github"></i></a></ul>
+		</nav>
+	</div>
+
+	<nav class="nav">
+		<ul class="flat">
+			
+			<li>
+				<a href="/">Home</a>
+			</li>
+			
+			<li>
+				<a href="/tags">Tags</a>
+			</li>
+			
+		</ul>
+	</nav>
+</div>
+
+
+		<div class="post-header">
+			<h1 class="title">Devops for foosball: CI and CD</h1>
+			<div class="meta">Posted at &mdash; Mar 4, 2018</div>
+		</div>
+
+		<div class="markdown">
+			<p>There are tons of devops tools at our disposal, including tools for automating server configuration, testing software builds, and deploying whole applications and systems. But, do you know when to use what tool, and what problems each devops tool tries to solve?</p>
+<p>In this series of posts, I will touch on the issues we face when developing software in an Agile environment, and I identify a devops solution to address that issue. Let's pretend that we're building a <a href="https://github.com/IQ-Inc/foosball-scoreboard-demo">foosball scoreboard system</a>, or something to keep track of foosball game scores. Yes, that's a real foosball scoreboad, written in Clojure, that talks with an Arduino hardware platform. But in our hypothetical, we're a team who builds foosball scoreboards for amateur and professional users, and we are interested in devops tools to improve our development process. We'll first focus on continuous integration and delivery services, one of the most relied-upon devops tools for Agile development teams.</p>
+<h2 id="continuous-integration-and-delivery">Continuous integration and delivery</h2>
+<p>Our team frequently adds new scoreboard features for our end-users. To help us implement new features, we introduce in-house and third-party libraries into the software build process. Of course, like any good software team, we also write automated tests for our foosball system. The tests show us that a feature works, and they serve as living documentation for how software modules perform. As we work on our scoreboard feature, we want to integrate our work with our co-workers&rsquo; features. Not only does the integration process ensure that eveything jives, but it also brings in the dependencies and tests that our teammates can use.</p>
+<p>Before we push our changes to the mainline, we want to build the repository and run the automated test suite. Running the tests on our own machines can be tedious, particularly if builds and integration tests take a long time to complete. But, how can we be sure we didn't break anything if we don't build the code and run the tests? No one wants to introduce bugs, so how can we quickly integrate features and ensure that we didn't break the build? Then, how do we prepare a release for our scoreboard users?</p>
+<p>We need a tool for continuous integration (CI) and continuous delivery (CD). When we push a feature to the repository, A CI tool builds the code and runs all of our automated tests. We can configure the CI process to build and test every pull request, or if we want better insight, every batch of commits. If the build or tests fail, we get a Slack or email notification. A CI tool gives us insight into the health of our build, and it immediately alerts the team if there are issues.</p>
+<p>We also need a tool for continuous delivery. After building and testing our software, our CD process deploys the application for our end-users. Since our foosball scoreboard runs on an end-user's local machine, we simply <a href="https://github.com/IQ-Inc/foosball-scoreboard-demo/releases">make the binary available for download</a>. However, we could imagine a future foosball service that runs in the cloud. A CD process could deploy that foosball service directly to a cloud platform, making it immediately accessible in a production environment. Most importantly, a CD process removes the tedium of preparing a release build for our users. The automatic process is free from human error once it's established.</p>
+<p>Our foosball team uses <a href="https://travis-ci.org/IQ-Inc/foosball-scoreboard-demo">Travis</a>, a CI / CD service that can build, test, and deploy our application. Travis is one of a few services that treats the CI / CD definition as a software artifact. <a href="https://github.com/mciantyre/foosball-scoreboard-demo/blob/master/.travis.yml">Our configuration</a> is checked directly into the repository. As of this writing, it looks something like this:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">language: clojure
+script: lein do uberjar, test :all
+deploy:
+  provider: releases
+  api_key:
+    secure: bENcn3kvRKSlhXMzXf/efKbhONSy7JnhxEYW63/SZrjM45OFJ+yWSqC4dLhUqLacjKknGyatnp7Pkf6dwK88TzIxCpeFPk4d7OxYio2L52F5pm0yIR5Dz2ac/nm9SENRkX3uqkRol9iDfSJJ<span style="color:#2aa198">+8</span>+IpaMygMm2NO9t9JHa1AppGcl+yQaCKs8sW9DQs/hVfXOGnsnoq6dQ+6GV0wLnftYTsonH/G92iq6W8fE71JWZr3oduo4tcbFDLBHRVPpO1cXPlo2FOJKuSsmgBJZy4HsVyR7ak1O28JRtfAhFD8bow4ucm+4eYuEYWhc3QlrhcWj0XbDkyl79m9ALhYSzauDfyUVkxHweKtImxeuGSzRRWxoZEvzHN97usXWF4Yt30Y6xPt6U3D/E8SKL+dOQlRSq3CD3mEEHddm8ZAVYO40YkSYOxoSWTzjUgMobUMw9hUScl+srF7keiN9YjNx5KjTNrh7MU/PlFH9ab2zcuH6lNWHAuB54yUnCReNA3YNRkair0DP7dMZxh6RBtwZMs4+TnHL9FY2v1Gw84XpOJka4jbOz6J1pZ4myDSyssPbNue7XMAYYDllPDUTAFsJ6hy8aVOeCQd+mvastznHOxaJgLeg1oUzLAdyAflQSAi1gY/wlyrwoEycXxBZqCszN4Bqrej9QXjhFrcsZJq8olnO9YhI=
+  file: target/foosball-score.jar
+  skip_cleanup: <span style="color:#cb4b16">true</span>
+  on:
+    repo: mciantyre/foosball-scoreboard-demo
+    tags: <span style="color:#cb4b16">true</span>
+</code></pre></div><p>We define the build as a Clojure project with the <code>language</code> key. For each batch of commits pushed to remote branches, run the scrip <code>lein do uberjar, test :all</code> to download dependencies, build the application, and run all the tests. We also specify a deploy to our GitHub repository's releases page. Whenever we tag a commit, upload the JAR file at <code>target/foosball-score.jar</code> so that our end-users can download the new release from GitHub. Travis uses the secure API key to interact with our repository.</p>
+<p>Rather than maintaining a document that describes how to configure the CI / CD process, we can refer directly to the configuration file. Since it's checked into git, it follows the development of the software, and it has the same traceability of the source code.</p>
+<p>There are many CI / CD services that are available for free and for sale. <a href="https://jenkins.io">Jenkins</a> is another popular, well-supported, and free option for build, test, and deployment automation. The Jenkins ecosystem has plugins for almost every job you want to achieve. Unlike Travis, Jenkins jobs are normally defined in a graphical interface. Jenkins is also designed for running on your own infrastructure, whereas Travis is normally utilized as a hosted CI / CD solution.</p>
+<p>For our simple foosball scoreboard application, we picked the easiest CI / CD process available. However, it is important to evaluate CI / CD solutions for your needs. We can compare Travis, Jenkins, and other CI / CD services across multiple dimensions, such as</p>
+<ul>
+<li>configuration management; is it a graphical configuration, or is it checked into the source code?</li>
+<li>hosting options; is it hosted on our infrastructure, or is it hosted off-site?</li>
+<li>what kinds of version control systems and services does it support?</li>
+<li>can it support our software language and build system?</li>
+<li>is it free and open source, or is it closed-source and licensed?</li>
+</ul>
+
+		</div>
+
+		<div class="post-tags">
+			
+				
+			
+		</div>
+		</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
+</div>
+
+
+
+<script>feather.replace()</script>
+</body>
+</html>

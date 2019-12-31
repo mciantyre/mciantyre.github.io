@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>On the singleton pattern in C&#43;&#43; - mciantyre</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="On the singleton pattern in C&#43;&#43;" />
+<meta property="og:description" content="The singleton pattern controls the creation and access of data. It is a popular design pattern that I&#39;ve used and seen used in a variety of software designs. However, I cringe when I see a singleton being accessed willy-nilly, just as one would access mutable, global state.
+int MyThing::DoSomething(int x) { m_value &#43;= x; // :( v-- sadness  if (!Logging::Instance().Log(LogMsg::Result, m_value)) return -1 return m_value; } How do I test this?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://mciantyre.github.io/post/2017-09-24-cpp-singletons/" />
+<meta property="article:published_time" content="2017-09-24T21:23:00+00:00" />
+<meta property="article:modified_time" content="2017-09-24T21:23:00+00:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="On the singleton pattern in C&#43;&#43;"/>
+<meta name="twitter:description" content="The singleton pattern controls the creation and access of data. It is a popular design pattern that I&#39;ve used and seen used in a variety of software designs. However, I cringe when I see a singleton being accessed willy-nilly, just as one would access mutable, global state.
+int MyThing::DoSomething(int x) { m_value &#43;= x; // :( v-- sadness  if (!Logging::Instance().Log(LogMsg::Result, m_value)) return -1 return m_value; } How do I test this?"/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/main.css" /><link rel="stylesheet" type="text/css" href="http://mciantyre.github.io/css/dark.css"  />
+
+	<script src="http://mciantyre.github.io/js/feather.min.js"></script>
+	
+	<script src="http://mciantyre.github.io/js/main.js"></script>
+</head>
+
+<body>
+	<div class="container wrapper post">
+		<div class="header">
+	<h1 class="site-title"><a href="http://mciantyre.github.io/">mciantyre</a></h1>
+	<div class="site-description"><h2>Technical blog and ramblings</h2><nav class="nav social">
+			<ul class="flat"><a href="https://github.com/mciantyre" title="Github"><i data-feather="github"></i></a></ul>
+		</nav>
+	</div>
+
+	<nav class="nav">
+		<ul class="flat">
+			
+			<li>
+				<a href="/">Home</a>
+			</li>
+			
+			<li>
+				<a href="/tags">Tags</a>
+			</li>
+			
+		</ul>
+	</nav>
+</div>
+
+
+		<div class="post-header">
+			<h1 class="title">On the singleton pattern in C&#43;&#43;</h1>
+			<div class="meta">Posted at &mdash; Sep 24, 2017</div>
+		</div>
+
+		<div class="markdown">
+			<p>The singleton pattern controls the creation and access of data. It is a popular design pattern that I've used and seen used in a variety of software designs. However, I cringe when I see a singleton being accessed willy-nilly, just as one would access mutable, global state.</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#dc322f">int</span> MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span> x)
+{
+  m_value <span style="color:#719e07">+</span><span style="color:#719e07">=</span> x;
+
+  <span style="color:#586e75">// :( v-- sadness
+</span><span style="color:#586e75"></span>  <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Instance().Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, m_value))
+    <span style="color:#719e07">return</span> <span style="color:#719e07">-</span><span style="color:#2aa198">1</span>
+
+  <span style="color:#719e07">return</span> m_value;
+}
+</code></pre></div><h2 id="how-do-i-test-this">How do I test this?</h2>
+<p>In this contrived example, <code>DoSomething</code> mutates its member variable <code>m_value</code> with the input <code>x</code>, logs the new member value using the <code>Logging</code> singleton, then returns the new member value. If the logging action failed, the function returns <code>-1</code>. Let's assume that <code>m_value</code> is <code>0</code> on construction. An automated test, using Google Test, would resemble</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">TEST(MyThingTest, DoSomethingLogsOk)
+{
+  MyThing thing;
+
+  EXPECT_CALL(<span style="color:#586e75">/* what goes here? */</span>, Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, <span style="color:#2aa198">42</span>))
+    .WillOnce(Return(<span style="color:#b58900">true</span>));
+
+  ASSERT_EQ(thing.DoSomething(<span style="color:#2aa198">42</span>), <span style="color:#2aa198">42</span>);
+}
+</code></pre></div><p>For reasons described in the requirements, it is critical to test the logging of <code>m_value</code> as an effect of <code>DoSomething</code>. In a unit test, we cannot call into the actual <code>Logging</code> singleton because it introduces non-deterministic behavior, and it will flood our log file with test data. We need to introduce a &ldquo;mocked&rdquo; <code>Logging</code> singleton to design fast and repeatable unit tests. But how can we change the global <code>Logging</code> singleton so that we can expect calls? It's supposed to never change!</p>
+<h2 id="singletons-and-the-pointer-swap">Singletons and the pointer swap</h2>
+<p>Assuming your <code>Logging</code> singleton uses a lazily-loaded, static pointer and has virtual methods, you can replace the contents of the inner <code>Logging</code> pointer with a mocked subclass of <code>Logging</code>.</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#586e75">// Static private fields...
+</span><span style="color:#586e75"></span>Logging<span style="color:#719e07">*</span> Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>sm_pInstance <span style="color:#719e07">=</span> <span style="color:#719e07">nullptr</span>;
+std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>mutex Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>sm_mutex;
+
+<span style="color:#586e75">// Get a reference to the singleton
+</span><span style="color:#586e75"></span>Logging<span style="color:#719e07">&amp;</span> Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Instance()
+{
+  <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>sm_pInstance)
+  {
+    std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>lock_guard<span style="color:#719e07">&lt;</span>std<span style="color:#719e07">:</span><span style="color:#719e07">:</span>mutex<span style="color:#719e07">&gt;</span> lock(sm_mutex);
+    <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>sm_pInstance)
+    {
+      sm_pInstance <span style="color:#719e07">=</span> <span style="color:#719e07">new</span> Logging();
+    }
+  }
+
+  <span style="color:#719e07">return</span> <span style="color:#719e07">*</span>sm_pInstance;
+}
+
+<span style="color:#586e75">// Log to disk
+</span><span style="color:#586e75"></span><span style="color:#dc322f">bool</span> Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Log(LogMsg msg, <span style="color:#dc322f">int</span> value)
+{
+  <span style="color:#dc322f">bool</span> result <span style="color:#719e07">=</span> <span style="color:#b58900">false</span>;
+  <span style="color:#586e75">// Write to disk, mutate result...
+</span><span style="color:#586e75"></span>  <span style="color:#719e07">return</span> result;
+}
+</code></pre></div><p>Here's our rudimentary <code>Logging</code> implementation (with elided private copy constructors / assignment operators). You may have seen the double-checked locking pattern similar to the one demonstrated in <code>Instance()</code>. As a side note: until C++11, <a href="http://www.aristeia.com/Papers/DDJ_Jul_Aug_2004_revised.pdf">this C++ code was not portable, and it was not a reliable means of controlling concurrent singleton access</a>. We won't look at the fix; there's a good read <a href="http://preshing.com/20130930/double-checked-locking-is-fixed-in-cpp11/">here</a> if you want to learn more.</p>
+<p>Normally, the <code>sm_pInstance</code> static member pointer is private, which is why you're not going to like this part: we need to make a <code>MockLoggingAccessor</code> class a <code>friend</code> of <code>Logging</code>:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">class</span> <span style="color:#268bd2">Logging</span>
+{
+  <span style="color:#719e07">friend</span> <span style="color:#719e07">class</span> <span style="color:#268bd2">MockLoggingAccessor</span>; <span style="color:#586e75">// :( &lt;-- more sadness
+</span><span style="color:#586e75"></span>  <span style="color:#719e07">static</span> Logging<span style="color:#719e07">*</span> sm_pInstance;
+
+  <span style="color:#586e75">// ...
+</span><span style="color:#586e75"></span>};
+</code></pre></div><p>The <code>MockLoggingAccessor</code> class will have access to the entire <code>Logging</code> singleton in a testing environment. Now, we can subclass <code>Logging</code>, mock the public interface using Google Mock, and implement a <code>MockLoggingAccessor</code> to perform a pointer swap:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">#</span><span style="color:#719e07">include</span> <span style="color:#719e07">&#34;gmock/gmock.h&#34;</span><span style="color:#719e07">
+</span><span style="color:#719e07"></span>
+<span style="color:#719e07">class</span> <span style="color:#268bd2">MockLogging</span> <span style="color:#719e07">:</span> <span style="color:#719e07">public</span> Logging
+{
+<span style="color:#719e07">public</span><span style="color:#719e07">:</span>
+  MOCK_METHOD_2(Log, <span style="color:#dc322f">bool</span>(LogMsg, <span style="color:#dc322f">int</span>));
+};
+
+<span style="color:#719e07">class</span> <span style="color:#268bd2">MockLoggingAccessor</span>
+{
+<span style="color:#719e07">public</span><span style="color:#719e07">:</span>
+  <span style="color:#719e07">static</span> <span style="color:#dc322f">void</span> SetLogging(Logging <span style="color:#719e07">*</span>logging)
+  {
+    <span style="color:#719e07">if</span> (<span style="color:#719e07">nullptr</span> <span style="color:#719e07">!</span><span style="color:#719e07">=</span> Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>sm_pInstance)
+      <span style="color:#719e07">delete</span> Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>sm_pInstance
+
+    Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>sm_pInstance <span style="color:#719e07">=</span> logging;
+  }
+};
+</code></pre></div><p>The <code>MockLoggingAccessor::SetLogging</code> takes a pointer to a <code>Logging</code> type. It replaces the singleton's implementation pointer with the pointer of another <code>Logging</code> type. That other <code>Logging</code> type will be a <code>MockLogging</code> pointer created in unit tests:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">TEST(MyThingTest, DoSomethingLogsOk)
+{
+  MockLogging<span style="color:#719e07">*</span> logging <span style="color:#719e07">=</span> <span style="color:#719e07">new</span> MockLogging();
+  MockLoggingAccessor<span style="color:#719e07">:</span><span style="color:#719e07">:</span>SetLogging(logging);
+
+  MyThing thing;
+
+  EXPECT_CALL(<span style="color:#719e07">*</span>logging, Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, <span style="color:#2aa198">42</span>))
+    .WillOnce(Return(<span style="color:#b58900">true</span>));
+
+  ASSERT_EQ(thing.DoSomething(<span style="color:#2aa198">42</span>), <span style="color:#2aa198">42</span>);
+}
+</code></pre></div><p>Here's how this is supposed to work:</p>
+<ul>
+<li><code>MyThing::DoSomething()</code> invokes <code>Logging::Instance()</code></li>
+<li>the <code>Instance()</code> method checks the static pointer. Since we replaced the pointer with our <code>MockLogging</code> type via <code>MockLoggingAccessor::SetLogging</code>, the pointer is non-null.</li>
+<li><code>Instance()</code> returns our <code>MockLogging</code> type.</li>
+<li>We expect a call on <code>Log</code> via the injected <code>logging</code> pointer, and we control the return.</li>
+</ul>
+<p>Was that confusing? I've maintained a code base in which this was the strategy for testing code that used singletons. The testing scaffolding is tedious, and you have to diligently manage the memory that is swapped into the singleton. It's no fun.</p>
+<h2 id="a-better-way-di">A better way: DI</h2>
+<p>Could there be an alternative design? Consider a new interface for <code>MyThing::DoSomething</code> that relies on dependency injection:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#dc322f">int</span> MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span> x, ILogging<span style="color:#719e07">&amp;</span> logging)
+{
+  m_value <span style="color:#719e07">+</span><span style="color:#719e07">=</span> x;
+
+  <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>logging.Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, m_value))
+    <span style="color:#719e07">return</span> <span style="color:#719e07">-</span><span style="color:#2aa198">1</span>
+
+  <span style="color:#719e07">return</span> m_value;
+}
+</code></pre></div><p><code>DoSomething</code> now accepts a reference to an <code>ILogging</code> type. The <code>ILogging</code> interface will be satisfied by the <code>Logging</code> singleton:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">class</span> <span style="color:#268bd2">Logging</span> <span style="color:#719e07">:</span> <span style="color:#719e07">public</span> ILogging
+{
+<span style="color:#719e07">public</span><span style="color:#719e07">:</span>
+  <span style="color:#dc322f">bool</span> Log(LogMsg, <span style="color:#dc322f">int</span>) <span style="color:#719e07">override</span>;
+
+  <span style="color:#586e75">// ...
+</span><span style="color:#586e75"></span>};
+</code></pre></div><p>We still have all the benefits of the singleton! In production code, we can invoke <code>DoSomething</code> with the <code>Logging</code> singleton instance, since <code>Logging</code> satisfies <code>ILogging</code>:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">MyThing thing;
+<span style="color:#dc322f">int</span> result <span style="color:#719e07">=</span> thing.DoSomething(<span style="color:#2aa198">2</span>, Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Instance());
+</code></pre></div><p>In test code, we don't need <code>MockLoggingAccessor</code> to mutate a global pointer. We simply pass-in a mock of <code>ILogging</code>:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">TEST(MyThingTest, DoSomethingLogsOk)
+{
+  MockLogging logging;  <span style="color:#586e75">// MockLogging subclasses ILogging
+</span><span style="color:#586e75"></span>  MyThing thing;
+
+  EXPECT_CALL(logging, Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, <span style="color:#2aa198">42</span>))
+    .WillOnce(Return(<span style="color:#b58900">true</span>));                       
+
+  ASSERT_EQ(thing.DoSomething(<span style="color:#2aa198">42</span>, logging), <span style="color:#2aa198">42</span>); <span style="color:#586e75">// Pass-in logging
+</span><span style="color:#586e75"></span>}
+
+TEST(MyThingTest, DoSomethingLogsFails)
+{
+  MockLogging logging;
+  MyThing thing;
+
+  EXPECT_CALL(logging, Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, <span style="color:#2aa198">42</span>))
+    .WillOnce(Return(<span style="color:#b58900">false</span>));                 
+
+  ASSERT_EQ(thing.DoSomething(<span style="color:#2aa198">42</span>, logging), <span style="color:#719e07">-</span><span style="color:#2aa198">1</span>); <span style="color:#586e75">// Pass-in logging
+</span><span style="color:#586e75"></span>}
+</code></pre></div><p>By designing to an interface, rather than grabbing references to global objects, we can simplify our testing. Furthermore, the behavior of our units is explicitly defined in our public interface. Consider the function signatures</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span>)             <span style="color:#586e75">// 1
+</span><span style="color:#586e75"></span>MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span>, ILogging<span style="color:#719e07">&amp;</span>)  <span style="color:#586e75">// 2
+</span></code></pre></div><p>Which function might perform logging? It is obvious that the second function might perform logging, since it accepts a <code>ILogging</code> type as an argument. However, if the first function accessed the global <code>Logging</code> singleton, it is not immediately obvious that it performs logging. We will have to look at the implementation or, better yet, the documentation ;)</p>
+<p>Singletons themselves are not bad. Controlling memory allocation and access has objective benefits. However, consumers of your singleton <em>don't need to know that it is a singleton.</em> By designing to an interface, we specify our unit behaviors in the public interface, and we create units that are easy to test, refactor, and maintain.</p>
+
+		</div>
+
+		<div class="post-tags">
+			
+				
+					<nav class="nav tags">
+							<ul class="flat">
+								
+								<li><a href="/tags/c&#43;&#43;">C&#43;&#43;</a></li>
+								
+							</ul>
+					</nav>
+				
+			
+		</div>
+		</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
+</div>
+
+
+
+<script>feather.replace()</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Connecting the BeagleBone Blue to WiFi - mciantyre</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="Connecting the BeagleBone Blue to WiFi" />
+<meta property="og:description" content="A BeagleBone Blue arrived in my mail today. My first task: connect it to a wireless network.
+Unlike other models in the BeagleBoard family, including the popular BeagleBone Black, the Blue has no ethernet port. The Blue is all wireless with WiFi and Bluetooth 4.1 and LE. Also unlike the Black, the Blue does not have a graphical interface. Therefore, we rely on command line tools to configure wireless networking." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/" />
+<meta property="article:published_time" content="2017-03-21T20:10:22+00:00" />
+<meta property="article:modified_time" content="2017-03-21T20:10:22+00:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Connecting the BeagleBone Blue to WiFi"/>
+<meta name="twitter:description" content="A BeagleBone Blue arrived in my mail today. My first task: connect it to a wireless network.
+Unlike other models in the BeagleBoard family, including the popular BeagleBone Black, the Blue has no ethernet port. The Blue is all wireless with WiFi and Bluetooth 4.1 and LE. Also unlike the Black, the Blue does not have a graphical interface. Therefore, we rely on command line tools to configure wireless networking."/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/main.css" /><link rel="stylesheet" type="text/css" href="http://mciantyre.github.io/css/dark.css"  />
+
+	<script src="http://mciantyre.github.io/js/feather.min.js"></script>
+	
+	<script src="http://mciantyre.github.io/js/main.js"></script>
+</head>
+
+<body>
+	<div class="container wrapper post">
+		<div class="header">
+	<h1 class="site-title"><a href="http://mciantyre.github.io/">mciantyre</a></h1>
+	<div class="site-description"><h2>Technical blog and ramblings</h2><nav class="nav social">
+			<ul class="flat"><a href="https://github.com/mciantyre" title="Github"><i data-feather="github"></i></a></ul>
+		</nav>
+	</div>
+
+	<nav class="nav">
+		<ul class="flat">
+			
+			<li>
+				<a href="/">Home</a>
+			</li>
+			
+			<li>
+				<a href="/tags">Tags</a>
+			</li>
+			
+		</ul>
+	</nav>
+</div>
+
+
+		<div class="post-header">
+			<h1 class="title">Connecting the BeagleBone Blue to WiFi</h1>
+			<div class="meta">Posted at &mdash; Mar 21, 2017</div>
+		</div>
+
+		<div class="markdown">
+			<p>A <a href="https://beagleboard.org/blog/2017-03-13-meet-beaglebone-blue/">BeagleBone <em>Blue</em></a> arrived in my mail today. My first task: connect it to a wireless network.</p>
+<p>Unlike other models in the BeagleBoard family, including the popular BeagleBone Black, the <em>Blue</em> has no ethernet port. The Blue is all wireless with WiFi and Bluetooth 4.1 and LE. Also unlike the Black, the Blue does not have a graphical interface. Therefore, we rely on command line tools to configure wireless networking.</p>
+<p>Most of this was new to me. Apart from some projects with the Intel Edison, I never had to set up WiFi on a headless Linux system. I hope this post saves you some searching!</p>
+<h3 id="talking-to-the-blue">Talking to the Blue</h3>
+<p>I assume familiarity with the BB Black in this section. Check out the getting started <a href="https://beagleboard.org/getting-started">here</a> to learn about first-time startup.</p>
+<p>The Blue and the Black have a similar interface: connect it to your host machine with a USB cable, and wait for the LED heartbeat. Network-over-USB, as well as serial-over-USB, both work out of the box (from the Blue's perspective; you may need to install some drivers depending on your host machine). Drop yourself into SSH or a serial screen session, and log in with the default credentials.</p>
+<h3 id="connmanctl">connmanctl</h3>
+<p><code>connmanctl</code> is a pre-installed command line tool for managing network connections. The utility seamlessly connected the Blue to my WiFi network.</p>
+<p>From the shell, enter</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">debian@beaglebone:~$ connmanctl</code></pre></div>
+<p>to start the utility. Notice a change in the shell prompt. Enter <code>help</code> to see a list of all commands. <code>quit</code> and <code>exit</code> stop the utility, saving configurations.</p>
+<p>Scan for wifi networks, then list services:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connmanctl&gt; scan wifi
+<span style="color:#586e75"># Wait for this to complete...</span>
+Scan completed <span style="color:#719e07">for</span> wifi
+connmanctl&gt; services
+
+<span style="color:#586e75"># Other SSIDs...</span>
+YOUR_SSID_NAME  wifi_abc123_lotsofchars_somemanagementqualification
+<span style="color:#586e75"># ...</span></code></pre></div>
+<p>Enable the wireless agent for entering and accepting passphrases:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connmanctl&gt; agent on
+Agent registered</code></pre></div>
+<p>Finally, connect to your network using the <code>wifi_abc123_blahblahblah</code> value:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">connmanctl&gt; connect wifi_abc123_lotsofchars_somemanagementqualification
+<span style="color:#586e75"># Enter password, if prompted</span></code></pre></div>
+<p>By this point, a very green light shines from the Blue. Exit <code>connmanctl</code> with <code>quit</code> or <code>exit</code>. Check out the <code>wlan0</code> field of <code>ifconfig</code> to see your IP. Finally, try a ping or a <code>sudo apt-get update</code>!</p>
+<p>The Blue auto-connects to known networks after startup, so there will be no need to re-connect. Consider the &ldquo;autoconnect&rdquo; configuration if there is a need to change this behavior.</p>
+<h3 id="future-todos">Future TODOs:</h3>
+<ul>
+<li>The Blue also has <code>wpa_supplicant</code> installed, but my endeavor using it flopped. I would be interested in exploring further.</li>
+<li>Follow the same process for Bluetooth. The <code>technologies</code> command lists the Bluetooth radio. The process may not be applicable.</li>
+</ul>
+
+		</div>
+
+		<div class="post-tags">
+			
+				
+					<nav class="nav tags">
+							<ul class="flat">
+								
+								<li><a href="/tags/embedded">embedded</a></li>
+								
+							</ul>
+					</nav>
+				
+			
+		</div>
+		</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
+</div>
+
+
+
+<script>feather.replace()</script>
+</body>
+</html>

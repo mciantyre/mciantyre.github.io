@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>On the singleton pattern in C&#43;&#43;: Policy-based design - mciantyre</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:title" content="On the singleton pattern in C&#43;&#43;: Policy-based design" />
+<meta property="og:description" content="In a previous post, we talked about units that use dependency injection to indirectly access singletons, as opposed to units that directly call on global singletons. In our design, a singleton implements an interface, and units accept a reference to the interface type. The design is easier to test, maintain, and refactor.
+In this brief follow-up, we&#39;ll explore an alternative approach that applies specifically to C&#43;&#43;: templates and &ldquo;policy-based design.&rdquo; Policy-based design comes from Alexandrescu&#39;s Modern C&#43;&#43; Design (2001)." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://mciantyre.github.io/post/2017-09-29-singleton-policy/" />
+<meta property="article:published_time" content="2017-09-29T09:00:00+00:00" />
+<meta property="article:modified_time" content="2017-09-29T09:00:00+00:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="On the singleton pattern in C&#43;&#43;: Policy-based design"/>
+<meta name="twitter:description" content="In a previous post, we talked about units that use dependency injection to indirectly access singletons, as opposed to units that directly call on global singletons. In our design, a singleton implements an interface, and units accept a reference to the interface type. The design is easier to test, maintain, and refactor.
+In this brief follow-up, we&#39;ll explore an alternative approach that applies specifically to C&#43;&#43;: templates and &ldquo;policy-based design.&rdquo; Policy-based design comes from Alexandrescu&#39;s Modern C&#43;&#43; Design (2001)."/>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/main.css" /><link rel="stylesheet" type="text/css" href="http://mciantyre.github.io/css/dark.css"  />
+
+	<script src="http://mciantyre.github.io/js/feather.min.js"></script>
+	
+	<script src="http://mciantyre.github.io/js/main.js"></script>
+</head>
+
+<body>
+	<div class="container wrapper post">
+		<div class="header">
+	<h1 class="site-title"><a href="http://mciantyre.github.io/">mciantyre</a></h1>
+	<div class="site-description"><h2>Technical blog and ramblings</h2><nav class="nav social">
+			<ul class="flat"><a href="https://github.com/mciantyre" title="Github"><i data-feather="github"></i></a></ul>
+		</nav>
+	</div>
+
+	<nav class="nav">
+		<ul class="flat">
+			
+			<li>
+				<a href="/">Home</a>
+			</li>
+			
+			<li>
+				<a href="/tags">Tags</a>
+			</li>
+			
+		</ul>
+	</nav>
+</div>
+
+
+		<div class="post-header">
+			<h1 class="title">On the singleton pattern in C&#43;&#43;: Policy-based design</h1>
+			<div class="meta">Posted at &mdash; Sep 29, 2017</div>
+		</div>
+
+		<div class="markdown">
+			<p><a href="/post/2017-09-24-cpp-singletons/">In a previous post</a>, we talked about units that use dependency injection to indirectly access singletons, as opposed to units that directly call on global singletons. In our design, a singleton implements an interface, and units accept a reference to the interface type. The design is easier to test, maintain, and refactor.</p>
+<p>In this brief follow-up, we'll explore an alternative approach that applies specifically to C++: templates and &ldquo;policy-based design.&rdquo; Policy-based design comes from Alexandrescu's <em>Modern C++ Design</em> (2001). It is an approach of designing (families of) classes to one or more &ldquo;policies,&rdquo; or sets of behaviors. Policies are implemented as templates with static or non-virtual instance methods. In our context, we will design a function, rather than classes, to a &ldquo;logging policy.&rdquo;</p>
+<p>As a quick refresher, we ended up with a design that resembles</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#dc322f">int</span> MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span> x, ILogging<span style="color:#719e07">&amp;</span> logging)
+{
+  m_value <span style="color:#719e07">+</span><span style="color:#719e07">=</span> x;
+
+  <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>logging.Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, m_value))
+    <span style="color:#719e07">return</span> <span style="color:#719e07">-</span><span style="color:#2aa198">1</span>
+
+  <span style="color:#719e07">return</span> m_value;
+}
+</code></pre></div><p>Since the method <code>DoSomething</code> needs to interact with logging, it accepts a reference to an <code>ILogging</code> interface. In production, the <code>Logging</code> singleton is passed-into the method. In unit testing, we provide a mocked collaborator in order to assert behavior in a repeatable manner.</p>
+<p>The <code>ILogging</code> interface is simple:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">enum</span> <span style="color:#719e07">class</span> <span style="color:#268bd2">LogMsg</span>;
+
+<span style="color:#719e07">class</span> <span style="color:#268bd2">ILogging</span>
+{
+<span style="color:#719e07">public</span><span style="color:#719e07">:</span>
+    <span style="color:#719e07">virtual</span> <span style="color:#719e07">~</span>ILogging() { <span style="color:#586e75">/* empty */</span> }
+    <span style="color:#719e07">virtual</span> <span style="color:#dc322f">bool</span> <span style="color:#268bd2">Log</span>(LogMsg, <span style="color:#dc322f">int</span>) <span style="color:#719e07">=</span> <span style="color:#2aa198">0</span>;
+};
+</code></pre></div><p>Let's consider a redesign of our <code>Logging</code> singleton. Rather than implementing a singleton pattern that ensures the &ldquo;only one&rdquo; behavior, let's consider implementing our <code>Logging</code> singleton as a class with <em>only</em> static functions and members. It ends up that the <code>Logging</code> class with static-only functions looks a lot like the <code>ILogging</code> interface!</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">class</span> <span style="color:#268bd2">Logging</span>
+{
+<span style="color:#719e07">public</span><span style="color:#719e07">:</span>
+    <span style="color:#719e07">static</span> <span style="color:#dc322f">bool</span> Log(LogMsg, <span style="color:#dc322f">int</span>);
+
+<span style="color:#719e07">private</span><span style="color:#719e07">:</span>
+    Logging() <span style="color:#719e07">=</span> <span style="color:#719e07">default</span>;
+    <span style="color:#719e07">static</span> Logging sm_Instance;
+    <span style="color:#586e75">// ...
+</span><span style="color:#586e75"></span>};
+</code></pre></div><p>As before with the singleton, there is only one static-only <code>Logging</code> class in memory. The naive use of static-only <code>Logging</code> would resemble the use of the singleton:</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#dc322f">int</span> MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span> x)
+{
+  m_value <span style="color:#719e07">+</span><span style="color:#719e07">=</span> x;
+
+  <span style="color:#586e75">// :( v-- again, sadness
+</span><span style="color:#586e75"></span>  <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>Logging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, m_value))
+    <span style="color:#719e07">return</span> <span style="color:#719e07">-</span><span style="color:#2aa198">1</span>
+
+  <span style="color:#719e07">return</span> m_value;
+}
+</code></pre></div><p>But, if <code>DoSomething</code> could accept a &ldquo;logging policy,&rdquo; it would very closely resemble the solution we made when designing to a run-time interface. We can achieve the analogous design if <code>DoSomething</code> accepted a template argument <code>TLogging</code>, short for &ldquo;logging type&rdquo;.</p>
+<div class="highlight"><pre style="color:#93a1a1;background-color:#002b36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#719e07">template</span> <span style="color:#719e07">&lt;</span><span style="color:#719e07">typename</span> TLogging<span style="color:#719e07">&gt;</span>
+<span style="color:#dc322f">int</span> MyThing<span style="color:#719e07">:</span><span style="color:#719e07">:</span>DoSomething(<span style="color:#dc322f">int</span> x)
+{
+  m_value <span style="color:#719e07">+</span><span style="color:#719e07">=</span> x;
+
+  <span style="color:#586e75">// Invoke a static method Log on type &#34;TLogging&#34;
+</span><span style="color:#586e75"></span>  <span style="color:#719e07">if</span> (<span style="color:#719e07">!</span>TLogging<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Log(LogMsg<span style="color:#719e07">:</span><span style="color:#719e07">:</span>Result, m_value))
+    <span style="color:#719e07">return</span> <span style="color:#719e07">-</span><span style="color:#2aa198">1</span>
+
+  <span style="color:#719e07">return</span> m_value;
+}
+
+<span style="color:#586e75">// Usage...
+</span><span style="color:#586e75"></span>MyThing thing;
+<span style="color:#dc322f">int</span> result <span style="color:#719e07">=</span> thing.DoSomething<span style="color:#719e07">&lt;</span>Logging<span style="color:#719e07">&gt;</span>(<span style="color:#2aa198">42</span>);
+</code></pre></div><p>Take a look at the templated <code>DoSomething</code> implementation. It invokes a static method <code>Log</code> on <code>TLogging</code>. Therefore, any type we provide as a template argument <em>must implement a static method <code>Log</code> with the same signature</em>. Since our <code>Logging</code> module has a static method <code>Log</code> with the required signature, this program is valid, and we successfully compile. If we instead passed in an <code>int</code> as the template argument to <code>DoSomething</code>, the program would fail to compile, since the type <code>int</code> does not have a static <code>Log</code> method. In essence, the compile-time behavior is exactly the same as when we designed to a run-time interface.</p>
+<h2 id="remarks">Remarks</h2>
+<p>If you like header-only C++ projects, or if virtual methods and run-time interfaces are not your forte, the policy design may work for you. The approach ends up eliminating singletons, opting for static memory allocation. Your application may need more control over when and how singletons are allocated; if so, template-based design as we've described may not satisfy your needs.</p>
+<p>While it is possible to unit test functions that accept these templates, it is not as straightforward when testing with a full-fledged mocking framework like Google Mock. Google Mock assumes that your class has <em>virtual</em> methods. In order to mock the policy, we would need to embed a singleton mock into a <code>MockLogging</code> class with static-only methods. The static-only methods could forward along to the singleton's mocked methods. This would allow us to expect calls on the mock and control the outputs. However, we end up reintroducing a singleton, but only in our test code instead of our production code.</p>
+
+		</div>
+
+		<div class="post-tags">
+			
+				
+					<nav class="nav tags">
+							<ul class="flat">
+								
+								<li><a href="/tags/c&#43;&#43;">C&#43;&#43;</a></li>
+								
+							</ul>
+					</nav>
+				
+			
+		</div>
+		</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
+</div>
+
+
+
+<script>feather.replace()</script>
+</body>
+</html>
