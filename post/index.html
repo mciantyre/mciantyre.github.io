@@ -1,83 +1,187 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
 <head>
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Posts - mciantyre</title><meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="alternate" type="application/rss+xml" href="http://mciantyre.github.io/post/index.xml" title="mciantyre" />
-	<meta property="og:title" content="Posts" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="http://mciantyre.github.io/post/" />
-<meta property="og:updated_time" content="2018-03-16T09:00:00+00:00" />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Posts"/>
-<meta name="twitter:description" content=""/>
-<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
-
-	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/normalize.css" />
-	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/main.css" /><link rel="stylesheet" type="text/css" href="http://mciantyre.github.io/css/dark.css"  />
-
-	<script src="http://mciantyre.github.io/js/feather.min.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Posts</title>
 	
-	<script src="http://mciantyre.github.io/js/main.js"></script>
+	
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="alternate" type="application/rss+xml" href="/post/index.xml" title="mciantyre">
 </head>
-
-
 <body>
-	<div class="container wrapper list">
-		<div class="header">
-	<h1 class="site-title"><a href="http://mciantyre.github.io/">mciantyre</a></h1>
-	<div class="site-description"><h2>Technical blog and ramblings</h2><nav class="nav social">
-			<ul class="flat"><a href="https://github.com/mciantyre" title="Github"><i data-feather="github"></i></a></ul>
-		</nav>
-	</div>
-
-	<nav class="nav">
-		<ul class="flat">
+	<header>
+	<a href="http://mciantyre.github.io/">mciantyre</a>
+	
+	<nav>
+		<ul>
 			
-			<li>
-				<a href="/">Home</a>
-			</li>
+			<li><a href="/">Home</a></li>
 			
-			<li>
-				<a href="/tags">Tags</a>
-			</li>
+			<li><a href="/tags">Tags</a></li>
 			
 		</ul>
 	</nav>
-</div>
+	
+</header>
 
+	
+	<main>
+		
+		<div>
+			<h1>Posts</h1>
+			
+		</div>
+		
 
 		
-			<h1 class="page-title">All articles</h1>
+			<article>
+	<h1><a href="http://mciantyre.github.io/post/2018-03-16-cpp-strong-exception-masks/">Safer configuration and exception masks in C&#43;&#43;</a></h1>
+	<time>16.03.2018 09:00</time>
+	
+	<a href="/tags/c&#43;&#43;">C&#43;&#43;</a>
+	
+	<a href="/tags/embedded">embedded</a>
+	
+	<div>
+		In embedded C software, it's typical to see configurations and exceptions represented as bitmasks. The approach allows us to configure ON/OFF setting in a space-efficient manner. We work with the masks using bitwise AND and OR, checking and setting bits as required.
+#define	SPI_MODE_CKPOL_HIGH (1 &lt;&lt; 8)#define	SPI_MODE_CKPHASE_HALF (1 &lt;&lt; 9)#define	SPI_MODE_BODER_MSB (1 &lt;&lt; 10)#define	SPI_MODE_CSPOL_HIGH (1 &lt;&lt; 11)#define	SPI_MODE_CSSTAT_HIGH (1 &lt;&lt; 12)#define	SPI_MODE_CSHOLD_HIGH (1 &lt;&lt; 13) typedef spi_cfg unsigned int; int spi_cfg(int fd, int dev, spi_cfg cfg); Above: real-life SPI configuration bits indended for setting device settings.
 		
-
-		<ul class="posts"><li class="post">
-				<a href="/post/2018-03-16-cpp-strong-exception-masks/">Safer configuration and exception masks in C&#43;&#43;</a> <span class="meta">Mar 16, 2018</span>
-			</li><li class="post">
-				<a href="/post/2018-03-04-devops-foosball-cicd/">Devops for foosball: CI and CD</a> <span class="meta">Mar 4, 2018</span>
-			</li><li class="post">
-				<a href="/post/2017-09-29-singleton-policy/">On the singleton pattern in C&#43;&#43;: Policy-based design</a> <span class="meta">Sep 29, 2017</span>
-			</li><li class="post">
-				<a href="/post/2017-09-24-cpp-singletons/">On the singleton pattern in C&#43;&#43;</a> <span class="meta">Sep 24, 2017</span>
-			</li><li class="post">
-				<a href="/post/2017-09-20-cpp-promises-futures/">C&#43;&#43; promises and futures</a> <span class="meta">Sep 20, 2017</span>
-			</li><li class="post">
-				<a href="/post/2017-09-17-cpp-compile-lang-lookup/">Safe language string selection in C&#43;&#43;11</a> <span class="meta">Sep 17, 2017</span>
-			</li><li class="post">
-				<a href="/post/2017-03-21-connecting-beaglebone-blue-wifi/">Connecting the BeagleBone Blue to WiFi</a> <span class="meta">Mar 21, 2017</span>
-			</li></ul>
+			<a href="http://mciantyre.github.io/post/2018-03-16-cpp-strong-exception-masks/">Read more...</a>
+		
 	</div>
+</article>
 
-	<div class="footer wrapper">
-	<nav class="nav">
-		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
-	</nav>
+		
+			<article>
+	<h1><a href="http://mciantyre.github.io/post/2018-03-04-devops-foosball-cicd/">Devops for foosball: CI and CD</a></h1>
+	<time>04.03.2018 11:45</time>
+	
+	<div>
+		There are tons of devops tools at our disposal, including tools for automating server configuration, testing software builds, and deploying whole applications and systems. But, do you know when to use what tool, and what problems each devops tool tries to solve?
+In this series of posts, I will touch on the issues we face when developing software in an Agile environment, and I identify a devops solution to address that issue.
+		
+			<a href="http://mciantyre.github.io/post/2018-03-04-devops-foosball-cicd/">Read more...</a>
+		
+	</div>
+</article>
+
+		
+			<article>
+	<h1><a href="http://mciantyre.github.io/post/2017-09-29-singleton-policy/">On the singleton pattern in C&#43;&#43;: Policy-based design</a></h1>
+	<time>29.09.2017 09:00</time>
+	
+	<a href="/tags/c&#43;&#43;">C&#43;&#43;</a>
+	
+	<div>
+		In a previous post, we talked about units that use dependency injection to indirectly access singletons, as opposed to units that directly call on global singletons. In our design, a singleton implements an interface, and units accept a reference to the interface type. The design is easier to test, maintain, and refactor.
+In this brief follow-up, we'll explore an alternative approach that applies specifically to C++: templates and &ldquo;policy-based design.&rdquo; Policy-based design comes from Alexandrescu's Modern C++ Design (2001).
+		
+			<a href="http://mciantyre.github.io/post/2017-09-29-singleton-policy/">Read more...</a>
+		
+	</div>
+</article>
+
+		
+			<article>
+	<h1><a href="http://mciantyre.github.io/post/2017-09-24-cpp-singletons/">On the singleton pattern in C&#43;&#43;</a></h1>
+	<time>24.09.2017 21:23</time>
+	
+	<a href="/tags/c&#43;&#43;">C&#43;&#43;</a>
+	
+	<div>
+		The singleton pattern controls the creation and access of data. It is a popular design pattern that I've used and seen used in a variety of software designs. However, I cringe when I see a singleton being accessed willy-nilly, just as one would access mutable, global state.
+int MyThing::DoSomething(int x) { m_value += x; // :( v-- sadness  if (!Logging::Instance().Log(LogMsg::Result, m_value)) return -1 return m_value; } How do I test this?
+		
+			<a href="http://mciantyre.github.io/post/2017-09-24-cpp-singletons/">Read more...</a>
+		
+	</div>
+</article>
+
+		
+			<article>
+	<h1><a href="http://mciantyre.github.io/post/2017-09-20-cpp-promises-futures/">C&#43;&#43; promises and futures</a></h1>
+	<time>20.09.2017 19:27</time>
+	
+	<a href="/tags/c&#43;&#43;">C&#43;&#43;</a>
+	
+	<div>
+		The C++11 standard introduced std::promise and std::future as a mechanism for concurrent programming. The promise-future pattern is similar to what you find in JavaScript: a &ldquo;promise&rdquo; denotes the fulfillment of a computation, and the &ldquo;future&rdquo; defines means of accessing the computation's result. The pair can be used for memory-safe communication across threads and for defining asynchronous tasks.
+Let's explore std::promise and std::future, as well as some modern C++ concepts and standard library components, by creating a basic promise-future paring.
+		
+			<a href="http://mciantyre.github.io/post/2017-09-20-cpp-promises-futures/">Read more...</a>
+		
+	</div>
+</article>
+
+		
+			<article>
+	<h1><a href="http://mciantyre.github.io/post/2017-09-17-cpp-compile-lang-lookup/">Safe language string selection in C&#43;&#43;11</a></h1>
+	<time>17.09.2017 18:29</time>
+	
+	<a href="/tags/c&#43;&#43;">C&#43;&#43;</a>
+	
+	<div>
+		I'm working on a legacy C codebase for an embedded system. The devices is sold in different countries and has to support different languages. Although we can set a default language at build time, the end-user is able to change the language by navigating through a few graphical menus. She'll see all the strings update immediately on the user interface.
+As might be expected when dealing with legacy code, my teammates and I ran into issues when adding language strings to the codebase.
+		
+			<a href="http://mciantyre.github.io/post/2017-09-17-cpp-compile-lang-lookup/">Read more...</a>
+		
+	</div>
+</article>
+
+		
+			<article>
+	<h1><a href="http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/">Connecting the BeagleBone Blue to WiFi</a></h1>
+	<time>21.03.2017 20:10</time>
+	
+	<a href="/tags/embedded">embedded</a>
+	
+	<div>
+		A BeagleBone Blue arrived in my mail today. My first task: connect it to a wireless network.
+Unlike other models in the BeagleBoard family, including the popular BeagleBone Black, the Blue has no ethernet port. The Blue is all wireless with WiFi and Bluetooth 4.1 and LE. Also unlike the Black, the Blue does not have a graphical interface. Therefore, we rely on command line tools to configure wireless networking.
+		
+			<a href="http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/">Read more...</a>
+		
+	</div>
+</article>
+
+		
+		<div>
+
+1 of 1
+
 </div>
 
+	</main>
+<aside>
+	<div>
+		<div>
+			<h3>LATEST POSTS</h3>
+		</div>
+		<div>
+			<ul>
+				
+				<li><a href="/post/2018-03-16-cpp-strong-exception-masks/">Safer configuration and exception masks in C&#43;&#43;</a></li>
+				
+				<li><a href="/post/2018-03-04-devops-foosball-cicd/">Devops for foosball: CI and CD</a></li>
+				
+				<li><a href="/post/2017-09-29-singleton-policy/">On the singleton pattern in C&#43;&#43;: Policy-based design</a></li>
+				
+				<li><a href="/post/2017-09-24-cpp-singletons/">On the singleton pattern in C&#43;&#43;</a></li>
+				
+				<li><a href="/post/2017-09-20-cpp-promises-futures/">C&#43;&#43; promises and futures</a></li>
+				
+			</ul>
+		</div>
+	</div>
+</aside>
 
 
-<script>feather.replace()</script>
+	<footer>
+	<p>&copy; 2019 <a href="http://mciantyre.github.io/">mciantyre</a></p>
+</footer>
+
 </body>
-
 </html>

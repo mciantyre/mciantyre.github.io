@@ -1,73 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
 <head>
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>embedded - mciantyre</title><meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="alternate" type="application/rss+xml" href="http://mciantyre.github.io/tags/embedded/index.xml" title="mciantyre" />
-	<meta property="og:title" content="embedded" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="http://mciantyre.github.io/tags/embedded/" />
-<meta property="og:updated_time" content="2018-03-16T09:00:00+00:00" />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="embedded"/>
-<meta name="twitter:description" content=""/>
-<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,300italic,400italic|Raleway:200,300" rel="stylesheet">
-
-	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/normalize.css" />
-	<link rel="stylesheet" type="text/css" media="screen" href="http://mciantyre.github.io/css/main.css" /><link rel="stylesheet" type="text/css" href="http://mciantyre.github.io/css/dark.css"  />
-
-	<script src="http://mciantyre.github.io/js/feather.min.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>embedded</title>
 	
-	<script src="http://mciantyre.github.io/js/main.js"></script>
+	
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="alternate" type="application/rss+xml" href="/tags/embedded/index.xml" title="mciantyre">
 </head>
-
-
 <body>
-	<div class="container wrapper list">
-		<div class="header">
-	<h1 class="site-title"><a href="http://mciantyre.github.io/">mciantyre</a></h1>
-	<div class="site-description"><h2>Technical blog and ramblings</h2><nav class="nav social">
-			<ul class="flat"><a href="https://github.com/mciantyre" title="Github"><i data-feather="github"></i></a></ul>
-		</nav>
-	</div>
-
-	<nav class="nav">
-		<ul class="flat">
+	<header>
+	<a href="http://mciantyre.github.io/">mciantyre</a>
+	
+	<nav>
+		<ul>
 			
-			<li>
-				<a href="/">Home</a>
-			</li>
+			<li><a href="/">Home</a></li>
 			
-			<li>
-				<a href="/tags">Tags</a>
-			</li>
+			<li><a href="/tags">Tags</a></li>
 			
 		</ul>
 	</nav>
-</div>
+	
+</header>
 
+	
+	<main>
+		
+		<div>
+			<h1>embedded</h1>
+			
+		</div>
+		
 
 		
-			<h1>Entries tagged - "embedded"</h1>
+			<article>
+	<h1><a href="http://mciantyre.github.io/post/2018-03-16-cpp-strong-exception-masks/">Safer configuration and exception masks in C&#43;&#43;</a></h1>
+	<time>16.03.2018 09:00</time>
+	
+	<a href="/tags/c&#43;&#43;">C&#43;&#43;</a>
+	
+	<a href="/tags/embedded">embedded</a>
+	
+	<div>
+		In embedded C software, it's typical to see configurations and exceptions represented as bitmasks. The approach allows us to configure ON/OFF setting in a space-efficient manner. We work with the masks using bitwise AND and OR, checking and setting bits as required.
+#define	SPI_MODE_CKPOL_HIGH (1 &lt;&lt; 8)#define	SPI_MODE_CKPHASE_HALF (1 &lt;&lt; 9)#define	SPI_MODE_BODER_MSB (1 &lt;&lt; 10)#define	SPI_MODE_CSPOL_HIGH (1 &lt;&lt; 11)#define	SPI_MODE_CSSTAT_HIGH (1 &lt;&lt; 12)#define	SPI_MODE_CSHOLD_HIGH (1 &lt;&lt; 13) typedef spi_cfg unsigned int; int spi_cfg(int fd, int dev, spi_cfg cfg); Above: real-life SPI configuration bits indended for setting device settings.
 		
-
-		<ul class="posts"><li class="post">
-				<a href="/post/2018-03-16-cpp-strong-exception-masks/">Safer configuration and exception masks in C&#43;&#43;</a> <span class="meta">Mar 16, 2018</span>
-			</li><li class="post">
-				<a href="/post/2017-03-21-connecting-beaglebone-blue-wifi/">Connecting the BeagleBone Blue to WiFi</a> <span class="meta">Mar 21, 2017</span>
-			</li></ul>
+			<a href="http://mciantyre.github.io/post/2018-03-16-cpp-strong-exception-masks/">Read more...</a>
+		
 	</div>
+</article>
 
-	<div class="footer wrapper">
-	<nav class="nav">
-		<div> <a href="https://github.com/vividvilla/ezhil">Ezhil theme</a> | Built with <a href="https://gohugo.io">Hugo</a></div>
-	</nav>
+		
+			<article>
+	<h1><a href="http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/">Connecting the BeagleBone Blue to WiFi</a></h1>
+	<time>21.03.2017 20:10</time>
+	
+	<a href="/tags/embedded">embedded</a>
+	
+	<div>
+		A BeagleBone Blue arrived in my mail today. My first task: connect it to a wireless network.
+Unlike other models in the BeagleBoard family, including the popular BeagleBone Black, the Blue has no ethernet port. The Blue is all wireless with WiFi and Bluetooth 4.1 and LE. Also unlike the Black, the Blue does not have a graphical interface. Therefore, we rely on command line tools to configure wireless networking.
+		
+			<a href="http://mciantyre.github.io/post/2017-03-21-connecting-beaglebone-blue-wifi/">Read more...</a>
+		
+	</div>
+</article>
+
+		
+		<div>
+
+1 of 1
+
 </div>
 
+	</main>
+<aside>
+	<div>
+		<div>
+			<h3>LATEST POSTS</h3>
+		</div>
+		<div>
+			<ul>
+				
+				<li><a href="/post/2018-03-16-cpp-strong-exception-masks/">Safer configuration and exception masks in C&#43;&#43;</a></li>
+				
+				<li><a href="/post/2018-03-04-devops-foosball-cicd/">Devops for foosball: CI and CD</a></li>
+				
+				<li><a href="/post/2017-09-29-singleton-policy/">On the singleton pattern in C&#43;&#43;: Policy-based design</a></li>
+				
+				<li><a href="/post/2017-09-24-cpp-singletons/">On the singleton pattern in C&#43;&#43;</a></li>
+				
+				<li><a href="/post/2017-09-20-cpp-promises-futures/">C&#43;&#43; promises and futures</a></li>
+				
+			</ul>
+		</div>
+	</div>
+</aside>
 
 
-<script>feather.replace()</script>
+	<footer>
+	<p>&copy; 2019 <a href="http://mciantyre.github.io/">mciantyre</a></p>
+</footer>
+
 </body>
-
 </html>
