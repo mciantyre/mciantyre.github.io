@@ -28,7 +28,7 @@
 	<main>
 		<article>
 			<h1>On the singleton pattern in C&#43;&#43;: Policy-based design</h1>
-			<time>29.09.2017 09:00</time>
+			<time>2017.09.29 09:00</time>
 			<div>
 				<p><a href="/post/2017-09-24-cpp-singletons/">In a previous post</a>, we talked about units that use dependency injection to indirectly access singletons, as opposed to units that directly call on global singletons. In our design, a singleton implements an interface, and units accept a reference to the interface type. The design is easier to test, maintain, and refactor.</p>
 <p>In this brief follow-up, we'll explore an alternative approach that applies specifically to C++: templates and &ldquo;policy-based design.&rdquo; Policy-based design comes from Alexandrescu's <em>Modern C++ Design</em> (2001). It is an approach of designing (families of) classes to one or more &ldquo;policies,&rdquo; or sets of behaviors. Policies are implemented as templates with static or non-virtual instance methods. In our context, we will design a function, rather than classes, to a &ldquo;logging policy.&rdquo;</p>
@@ -135,7 +135,7 @@
 
 
 	<footer>
-	<p>&copy; 2019 <a href="http://mciantyre.github.io/">mciantyre</a></p>
+	<p>&copy; 2020 <a href="http://mciantyre.github.io/">mciantyre</a></p>
 </footer>
 
 </body>
